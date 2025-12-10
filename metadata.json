@@ -1,0 +1,7 @@
+{
+  "name": "Anubis",
+  "description": "A voice-enabled application that conducts neurophenomenology interviews using Gemini Live API to explore psychedelic experiences in granular detail.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
