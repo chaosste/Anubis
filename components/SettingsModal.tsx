@@ -24,10 +24,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 h-[85vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-slate-900 rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-10 sm:zoom-in-95 duration-200 h-[85vh] sm:h-[85vh] flex flex-col">
         
-        <div className="flex items-center justify-between p-6 border-b border-slate-800 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-indigo-900/30 rounded-lg">
                 <Settings2 className="w-5 h-5 text-indigo-400" />
@@ -42,7 +42,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           </button>
         </div>
 
-        <div className="p-6 space-y-6 overflow-y-auto flex-grow custom-scrollbar">
+        <div className="p-4 sm:p-6 space-y-6 overflow-y-auto flex-grow custom-scrollbar">
 
           {/* Voice Selection */}
           <div>
@@ -53,7 +53,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <select
                 value={settings.voiceName}
                 onChange={(e) => onSettingsChange({ ...settings, voiceName: e.target.value })}
-                className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10"
+                className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10 text-sm sm:text-base"
               >
                 {voices.map((voice) => (
                   <option key={voice.id} value={voice.id} className="bg-slate-900">
@@ -77,7 +77,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <select
                 value={settings.accent}
                 onChange={(e) => onSettingsChange({ ...settings, accent: e.target.value })}
-                className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10"
+                className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10 text-sm sm:text-base"
               >
                 {Object.keys(ACCENTS).map((accentKey) => (
                   <option key={accentKey} value={accentKey} className="bg-slate-900">
@@ -198,7 +198,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <select
                 value={settings.bitDepth}
                 onChange={(e) => onSettingsChange({ ...settings, bitDepth: Number(e.target.value) })}
-                className="w-full appearance-none p-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                className="w-full appearance-none p-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm sm:text-base"
                 >
                 <option value={16}>16-bit PCM (Standard)</option>
                 <option value={16} disabled>24-bit (Not supported)</option>
@@ -210,7 +210,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         </div>
 
-        <div className="p-6 bg-slate-900 border-t border-slate-800 flex justify-end flex-shrink-0">
+        <div className="p-4 sm:p-6 bg-slate-900 border-t border-slate-800 flex justify-end flex-shrink-0">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-white text-black rounded-lg hover:bg-slate-200 transition-colors font-medium text-sm"

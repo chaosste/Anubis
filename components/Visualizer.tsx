@@ -92,7 +92,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive }) => {
   }, [isActive]); // Only re-run loop setup when active state changes
 
   return (
-    <div className="relative w-full h-64 flex items-center justify-center">
+    <div className="relative w-full h-48 sm:h-64 flex items-center justify-center">
       <canvas 
         ref={canvasRef} 
         width={400} 
@@ -101,7 +101,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive }) => {
       />
       {!isActive && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <p className="text-slate-400 font-light tracking-widest text-sm uppercase">
+          <p className="text-slate-400 font-light tracking-widest text-xs sm:text-sm uppercase">
             Ready to Start
           </p>
         </div>
