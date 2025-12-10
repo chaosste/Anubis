@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings2, Mic, ChevronDown, Zap, Sparkles } from 'lucide-react';
+import { X, Settings2, Mic, ChevronDown, Zap, Sparkles, Sliders } from 'lucide-react';
 import { AudioSettings } from '../types';
 import { MODEL_NAME, FAST_MODEL_NAME } from '../constants';
 
@@ -21,7 +21,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   const voices = [
     { id: 'Fenrir', name: 'Fenrir', desc: 'Deep & Resonant' },
     { id: 'Charon', name: 'Charon', desc: 'Steady & Calm' },
-    { id: 'Vindemiatrix', name: 'Vindemiatrix', desc: 'Mystical & Clear' }
+    { id: 'Puck', name: 'Puck', desc: 'Playful & Light' },
+    { id: 'Kore', name: 'Kore', desc: 'Soft & Gentle' },
+    { id: 'Zephyr', name: 'Zephyr', desc: 'Bright & Crisp' },
+    { id: 'Vindemiatrix', name: 'Vindemiatrix', desc: 'Mystical (Alias)' }
   ];
 
   return (
@@ -64,6 +67,32 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               </select>
               <Mic className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none" />
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none" />
+            </div>
+          </div>
+
+          <div className="h-px bg-slate-800" />
+
+          {/* Pitch Adjustment */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-slate-400">
+                Voice Pitch
+              </label>
+              <span className="text-xs font-mono text-indigo-400">
+                {settings.pitch > 0 ? '+' : ''}{settings.pitch} Semitones
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Sliders className="w-4 h-4 text-slate-500" />
+              <input
+                type="range"
+                min="-5"
+                max="5"
+                step="0.5"
+                value={settings.pitch}
+                onChange={(e) => onSettingsChange({ ...settings, pitch: parseFloat(e.target.value) })}
+                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all"
+              />
             </div>
           </div>
 

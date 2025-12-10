@@ -259,6 +259,13 @@ export const useGeminiLive = () => {
         const source = outputCtx.createBufferSource();
         source.buffer = audioBuffer;
         
+        // Apply pitch shift (detune) if configured
+        const pitch = audioSettingsRef.current?.pitch || 0;
+        if (pitch !== 0) {
+          // detune is in cents (1 semitone = 100 cents)
+          source.detune.value = pitch * 100;
+        }
+
         const gainNode = outputCtx.createGain();
         gainNode.connect(outputCtx.destination);
         source.connect(gainNode);
@@ -268,7 +275,14 @@ export const useGeminiLive = () => {
         });
 
         source.start(nextStartTimeRef.current);
-        nextStartTimeRef.current += audioBuffer.duration;
+        
+        // Adjust scheduling duration based on pitch change
+        // Higher pitch = faster playback = shorter duration
+        // rate = 2^(semitones/12)
+        const playbackRate = Math.pow(2, pitch / 12);
+        const adjustedDuration = audioBuffer.duration / playbackRate;
+        
+        nextStartTimeRef.current += adjustedDuration;
         activeSourcesRef.current.add(source);
     }
 

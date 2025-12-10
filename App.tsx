@@ -8,7 +8,7 @@ import { ConnectionState, AudioSettings } from './types';
 import { Sparkles, History, Mic2, Settings } from 'lucide-react';
 import { MODEL_NAME } from './constants';
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   const { 
     connect, 
     disconnect, 
@@ -23,7 +23,8 @@ const App: React.FC = () => {
     sampleRate: 16000,
     bitDepth: 16,
     voiceName: 'Fenrir',
-    model: MODEL_NAME
+    model: MODEL_NAME,
+    pitch: 0
   });
 
   const handleConnect = () => {
@@ -31,29 +32,19 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-slate-200 font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-black text-slate-200 font-sans font-light selection:bg-indigo-500/30">
       
       {/* Header */}
       <header className="bg-black/80 border-b border-slate-800 sticky top-0 z-10 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Logo: White background, Black icon, Cropped (scaled up) */}
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden p-0.5">
-              <svg viewBox="0 0 100 100" className="w-full h-full text-black fill-current" xmlns="http://www.w3.org/2000/svg">
-                {/* Sun Disk */}
-                <circle cx="50" cy="18" r="9" />
-                {/* Upper Legs holding sun */}
-                <path d="M42 30 Q38 20 41 18 M58 30 Q62 20 59 18" stroke="currentColor" strokeWidth="2" fill="none" />
-                {/* Thorax */}
-                <path d="M42 30 L58 30 L62 38 L50 45 L38 38 Z" />
-                {/* Wings */}
-                <path d="M63 38 C75 32 90 20 95 15 C 98 40 92 55 82 62 C 75 55 68 50 63 46 Z" />
-                <path d="M37 38 C25 32 10 20 5 15 C 2 40 8 55 18 62 C 25 55 32 50 37 46 Z" />
-                {/* Abdomen */}
-                <path d="M40 48 C35 60 38 80 46 88 L 50 92 L 54 88 C 62 80 65 60 60 48 L 50 54 Z" />
-                {/* Bottom Legs */}
-                <path d="M46 85 Q40 92 35 92 M54 85 Q60 92 65 92" stroke="currentColor" strokeWidth="2" fill="none" />
-              </svg>
+            {/* Logo: White background, Image */}
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+              <img 
+                src="/beetle-1.jpg" 
+                alt="Anubis Scarab" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-white">
               Anubis
@@ -87,8 +78,8 @@ const App: React.FC = () => {
         {/* Intro Text (only when disconnected and no history) */}
         {connectionState === ConnectionState.DISCONNECTED && transcripts.length === 0 && (
           <div className="text-left mb-12 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-4xl font-extrabold text-white mb-6">
-              Mapping your psychedelic phenomenology
+            <h2 className="text-4xl sm:text-6xl font-extrabold text-white mb-6 tracking-tight">
+              Anubis hears you.
             </h2>
             <div className="text-lg text-slate-400 leading-relaxed space-y-4">
               <p>
@@ -109,17 +100,7 @@ const App: React.FC = () => {
 
         {/* Core Interface */}
         <div className="w-full bg-slate-900 rounded-3xl shadow-2xl shadow-black/50 border border-slate-800 overflow-hidden relative isolate">
-           {/* Background Image & Overlay */}
-           <div className="absolute inset-0 z-0">
-             <img 
-               src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" 
-               alt="Phenomenology Texture" 
-               className="w-full h-full object-cover opacity-80"
-             />
-             {/* Gradient overlay to ensure text/UI visibility against the image */}
-             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80 backdrop-blur-[2px]" />
-           </div>
-
+           
            <div className="relative z-10 p-8">
              {/* Visualizer Area */}
              <div className="mb-8 relative">
@@ -182,5 +163,3 @@ const App: React.FC = () => {
     </div>
   );
 };
-
-export default App;

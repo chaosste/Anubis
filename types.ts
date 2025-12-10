@@ -21,4 +21,5 @@ export interface AudioSettings {
   bitDepth: number;
   voiceName: string;
   model: string;
+  pitch: number; // Semitones: -5 to +5
 }
