@@ -7,7 +7,7 @@ interface VisualizerProps {
 
 const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
   const currentRadiusRef = useRef<number>(50);
   const volumeRef = useRef(volume);
 

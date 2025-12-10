@@ -38,9 +38,21 @@ const App: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Logo: White background, Black icon, Cropped (scaled up) */}
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-              <svg viewBox="0 0 100 100" className="w-full h-full text-black fill-current scale-125" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 55 C10 50 30 48 40 45 L40 35 L30 35 L40 10 L60 10 L65 35 C75 35 90 45 90 60 C90 75 80 90 40 90 L10 90 Z M45 50 C48 50 50 48 50 45 C50 42 48 40 45 40 C42 40 40 42 40 45 C40 48 42 50 45 50 Z" />
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden p-0.5">
+              <svg viewBox="0 0 100 100" className="w-full h-full text-black fill-current" xmlns="http://www.w3.org/2000/svg">
+                {/* Sun Disk */}
+                <circle cx="50" cy="18" r="9" />
+                {/* Upper Legs holding sun */}
+                <path d="M42 30 Q38 20 41 18 M58 30 Q62 20 59 18" stroke="currentColor" strokeWidth="2" fill="none" />
+                {/* Thorax */}
+                <path d="M42 30 L58 30 L62 38 L50 45 L38 38 Z" />
+                {/* Wings */}
+                <path d="M63 38 C75 32 90 20 95 15 C 98 40 92 55 82 62 C 75 55 68 50 63 46 Z" />
+                <path d="M37 38 C25 32 10 20 5 15 C 2 40 8 55 18 62 C 25 55 32 50 37 46 Z" />
+                {/* Abdomen */}
+                <path d="M40 48 C35 60 38 80 46 88 L 50 92 L 54 88 C 62 80 65 60 60 48 L 50 54 Z" />
+                {/* Bottom Legs */}
+                <path d="M46 85 Q40 92 35 92 M54 85 Q60 92 65 92" stroke="currentColor" strokeWidth="2" fill="none" />
               </svg>
             </div>
             <h1 className="text-xl font-bold tracking-tight text-white">
