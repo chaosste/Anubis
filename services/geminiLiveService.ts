@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { ConnectionState, TranscriptionItem, AudioSettings } from '../types';
 import { createPcmBlob, base64Decode, pcmToAudioBuffer } from './audioUtils';
-import { SYSTEM_INSTRUCTION } from '../constants';
+import { getSystemInstruction } from '../constants';
 
 export const useGeminiLive = () => {
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
@@ -107,15 +107,17 @@ export const useGeminiLive = () => {
       
       // Map custom voice names to valid API voice names
       let apiVoiceName = settings.voiceName;
-      if (apiVoiceName === 'Vindemiatrix') {
+      if (apiVoiceName === 'Ishtar') {
         apiVoiceName = 'Kore'; // Mapping to a valid female voice to contrast with Fenrir/Charon
+      } else if (apiVoiceName === 'Anubis') {
+        apiVoiceName = 'Fenrir'; // Mapping to Fenrir for the deep base
       }
       
       const config = {
         model: settings.model,
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: SYSTEM_INSTRUCTION,
+          systemInstruction: getSystemInstruction(settings.accent),
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: apiVoiceName } },
           },
@@ -260,7 +262,13 @@ export const useGeminiLive = () => {
         source.buffer = audioBuffer;
         
         // Apply pitch shift (detune) if configured
-        const pitch = audioSettingsRef.current?.pitch || 0;
+        let pitch = audioSettingsRef.current?.pitch || 0;
+        
+        // If Anubis voice is selected, apply a specific deep offset
+        if (audioSettingsRef.current?.voiceName === 'Anubis') {
+            pitch -= 2.5; // Deepen by 2.5 semitones to sound like a rumbling deity
+        }
+
         if (pitch !== 0) {
           // detune is in cents (1 semitone = 100 cents)
           source.detune.value = pitch * 100;

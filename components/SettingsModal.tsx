@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Settings2, Mic, ChevronDown, Zap, Sparkles, Sliders } from 'lucide-react';
+import { X, Settings2, Mic, ChevronDown, Zap, Sparkles, Sliders, MapPin } from 'lucide-react';
 import { AudioSettings } from '../types';
-import { MODEL_NAME, FAST_MODEL_NAME } from '../constants';
+import { MODEL_NAME, FAST_MODEL_NAME, ACCENTS } from '../constants';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -19,19 +19,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   if (!isOpen) return null;
 
   const voices = [
-    { id: 'Fenrir', name: 'Fenrir', desc: 'Deep & Resonant' },
-    { id: 'Charon', name: 'Charon', desc: 'Steady & Calm' },
-    { id: 'Puck', name: 'Puck', desc: 'Playful & Light' },
-    { id: 'Kore', name: 'Kore', desc: 'Soft & Gentle' },
-    { id: 'Zephyr', name: 'Zephyr', desc: 'Bright & Crisp' },
-    { id: 'Vindemiatrix', name: 'Vindemiatrix', desc: 'Mystical (Alias)' }
+    { id: 'Ishtar', name: 'Ishtar', desc: 'Esoteric & Liminal' },
+    { id: 'Anubis', name: 'Anubis', desc: 'Deep, Mysterious & Rumbling' }
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 h-[85vh] flex flex-col">
         
-        <div className="flex items-center justify-between p-6 border-b border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-indigo-900/30 rounded-lg">
                 <Settings2 className="w-5 h-5 text-indigo-400" />
@@ -46,18 +42,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 overflow-y-auto flex-grow custom-scrollbar">
 
           {/* Voice Selection */}
           <div>
              <label className="block text-sm font-medium text-slate-400 mb-2">
               Voice Persona
             </label>
-            <div className="relative">
+            <div className="relative group">
               <select
                 value={settings.voiceName}
                 onChange={(e) => onSettingsChange({ ...settings, voiceName: e.target.value })}
-                className="w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
+                className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10"
               >
                 {voices.map((voice) => (
                   <option key={voice.id} value={voice.id} className="bg-slate-900">
@@ -65,9 +61,36 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   </option>
                 ))}
               </select>
-              <Mic className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none" />
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none" />
+              <Mic className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-colors duration-300 peer-focus:text-indigo-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-indigo-400 pointer-events-none" />
             </div>
+          </div>
+
+          <div className="h-px bg-slate-800" />
+
+          {/* Accent Selection */}
+          <div>
+             <label className="block text-sm font-medium text-slate-400 mb-2">
+              Regional Accent
+            </label>
+            <div className="relative group">
+              <select
+                value={settings.accent}
+                onChange={(e) => onSettingsChange({ ...settings, accent: e.target.value })}
+                className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10"
+              >
+                {Object.keys(ACCENTS).map((accentKey) => (
+                  <option key={accentKey} value={accentKey} className="bg-slate-900">
+                    {accentKey}
+                  </option>
+                ))}
+              </select>
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-colors duration-300 peer-focus:text-indigo-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-indigo-400 pointer-events-none" />
+            </div>
+             <p className="mt-2 text-xs text-slate-500">
+              Modifies phrasing and intonation of the selected voice.
+            </p>
           </div>
 
           <div className="h-px bg-slate-800" />
@@ -187,7 +210,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         </div>
 
-        <div className="p-6 bg-slate-900 border-t border-slate-800 flex justify-end">
+        <div className="p-6 bg-slate-900 border-t border-slate-800 flex justify-end flex-shrink-0">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-white text-black rounded-lg hover:bg-slate-200 transition-colors font-medium text-sm"

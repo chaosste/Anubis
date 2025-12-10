@@ -4,6 +4,7 @@ import Visualizer from './components/Visualizer';
 import Controls from './components/Controls';
 import Transcript from './components/Transcript';
 import SettingsModal from './components/SettingsModal';
+import Logo from './components/Logo';
 import { ConnectionState, AudioSettings } from './types';
 import { Sparkles, History, Mic2, Settings } from 'lucide-react';
 import { MODEL_NAME } from './constants';
@@ -22,9 +23,10 @@ export const App: React.FC = () => {
   const [audioSettings, setAudioSettings] = useState<AudioSettings>({
     sampleRate: 16000,
     bitDepth: 16,
-    voiceName: 'Fenrir',
+    voiceName: 'Anubis',
     model: MODEL_NAME,
-    pitch: 0
+    pitch: 0,
+    accent: 'Hampshire Hierophant'
   });
 
   const handleConnect = () => {
@@ -38,13 +40,9 @@ export const App: React.FC = () => {
       <header className="bg-black/80 border-b border-slate-800 sticky top-0 z-10 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Logo: White background, Image */}
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-              <img 
-                src="/beetle-1.jpg" 
-                alt="Anubis Scarab" 
-                className="w-full h-full object-cover"
-              />
+            {/* Logo Component */}
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-lg shadow-white/5">
+              <Logo className="w-full h-full" />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-white">
               Anubis
@@ -83,16 +81,19 @@ export const App: React.FC = () => {
             </h2>
             <div className="text-lg text-slate-400 leading-relaxed space-y-4">
               <p>
-                This voice interface uses <span className="font-semibold text-indigo-400">Neurophenomenology</span> to classify anomalous experiences.
+                This voice interface uses a granular interview approach from the discipline of <a href="https://www.cell.com/trends/cognitive-sciences/fulltext/S1364-6613(22)00291-1" target="_blank" rel="noopener noreferrer" className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline transition-colors">microphenomenology</a>.
               </p>
               <p>
-                Your trip is your own: it can be unusual, straightforward, proud, embarrassing, or all of the above, even at the same time.
+                Anubis listens, hoping to aid the meaningful integration of anomalous experiences.
               </p>
               <p>
-                Tone, sensations, sounds, smells, accents, atmosphere, shifts and contradictions are just as meaningful as visual content.
+                Anubis will encourage you to examine details, to help your memory gather momentum and your vision flow clearly.
               </p>
               <p>
-                Going into detail can gather momentum and open up your flow.
+                Each trip is unique: it can be unusual, straightforward, proud, embarrassing, or all of the above, even at the same time.
+              </p>
+              <p>
+                Tone, sensations, sounds, smells, accents, atmosphere, shifts and contradictions can be just as meaningful as visual content.
               </p>
             </div>
           </div>
@@ -136,6 +137,9 @@ export const App: React.FC = () => {
              />
            </div>
         </div>
+
+        {/* Spacer */}
+        <div className="h-16 w-full"></div>
 
         {/* Live Transcript */}
         <div className="w-full animate-in fade-in duration-1000">
