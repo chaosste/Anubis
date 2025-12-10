@@ -40,7 +40,7 @@ export const App: React.FC = () => {
     {
       id: 1,
       // Image: Green/Blue entwined figures
-      image: "/a1.jpeg", 
+      image: "images/a1.jpeg", 
       content: (
         <>
           This voice interface uses a granular interview approach from the discipline of <span className="text-indigo-400">microphenomenology</span>.
