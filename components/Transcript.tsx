@@ -15,7 +15,7 @@ const Transcript: React.FC<TranscriptProps> = ({ items }) => {
   if (items.length === 0) return null;
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-8 p-4 bg-slate-50 rounded-2xl border border-slate-100 h-64 overflow-y-auto shadow-inner">
+    <div className="w-full max-w-2xl mx-auto mt-8 p-4 bg-slate-900/50 rounded-2xl border border-slate-800 h-64 overflow-y-auto shadow-inner no-scrollbar">
       <div className="space-y-4">
         {items.map((item) => (
           <div
@@ -28,7 +28,7 @@ const Transcript: React.FC<TranscriptProps> = ({ items }) => {
               className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm leading-relaxed ${
                 item.role === 'user'
                   ? 'bg-indigo-600 text-white rounded-br-none'
-                  : 'bg-white text-slate-700 border border-slate-200 shadow-sm rounded-bl-none'
+                  : 'bg-slate-800 text-slate-200 border border-slate-700 shadow-sm rounded-bl-none'
               }`}
             >
               <p>{item.text}</p>

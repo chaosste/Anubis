@@ -80,4 +80,34 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive }) => {
       animationRef.current = requestAnimationFrame(render);
     };
 
-    
+    // Immediate render call ensures we clear the canvas and draw the correct state (Active or Idle)
+    // synchronously with the effect setup, preventing any lingering frames from the previous state.
+    render();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isActive]); // Only re-run loop setup when active state changes
+
+  return (
+    <div className="relative w-full h-64 flex items-center justify-center">
+      <canvas 
+        ref={canvasRef} 
+        width={400} 
+        height={300}
+        className="w-full h-full object-contain"
+      />
+      {!isActive && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <p className="text-slate-400 font-light tracking-widest text-sm uppercase">
+            Ready to Start
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Visualizer;

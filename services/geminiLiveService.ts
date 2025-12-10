@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { ConnectionState, TranscriptionItem, AudioSettings } from '../types';
 import { createPcmBlob, base64Decode, pcmToAudioBuffer } from './audioUtils';
-import { MODEL_NAME, SYSTEM_INSTRUCTION } from '../constants';
+import { SYSTEM_INSTRUCTION } from '../constants';
 
 export const useGeminiLive = () => {
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
@@ -105,13 +105,19 @@ export const useGeminiLive = () => {
       // 3. Initialize Gemini Client
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
+      // Map custom voice names to valid API voice names
+      let apiVoiceName = settings.voiceName;
+      if (apiVoiceName === 'Vindemiatrix') {
+        apiVoiceName = 'Kore'; // Mapping to a valid female voice to contrast with Fenrir/Charon
+      }
+      
       const config = {
-        model: MODEL_NAME,
+        model: settings.model,
         config: {
           responseModalities: [Modality.AUDIO],
           systemInstruction: SYSTEM_INSTRUCTION,
           speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
+            voiceConfig: { prebuiltVoiceConfig: { voiceName: apiVoiceName } },
           },
           inputAudioTranscription: {}, 
           outputAudioTranscription: {},

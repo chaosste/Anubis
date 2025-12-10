@@ -19,4 +19,6 @@ export interface AudioVisualizerData {
 export interface AudioSettings {
   sampleRate: number;
   bitDepth: number;
+  voiceName: string;
+  model: string;
 }
