@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface IntroCardProps {
   children: React.ReactNode;
@@ -7,34 +7,39 @@ interface IntroCardProps {
 }
 
 const IntroCard: React.FC<IntroCardProps> = ({ children, image, index }) => {
+  const [hasError, setHasError] = useState(false);
+
+  // Use image if provided and no error occurred loading it
+  const showImage = image && !hasError;
+
   return (
     <div 
-      className="relative flex-none w-[85vw] sm:w-[400px] aspect-[3/4] sm:aspect-[4/3] overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl snap-center group isolate"
+      className="relative flex-none w-[85vw] sm:w-[350px] aspect-[3/4] overflow-hidden rounded-3xl bg-black border border-slate-800 shadow-2xl snap-center group isolate"
     >
       {/* Background */}
-      {image ? (
+      {showImage ? (
         <div className="absolute inset-0 z-0">
           <img 
             src={image} 
-            alt="Background" 
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
+            alt="Visual context for microphenomenology" 
+            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 opacity-90"
+            onError={() => setHasError(true)}
           />
           {/* Gradient Overlay for legibility */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
       ) : (
         <div className={`absolute inset-0 z-0 bg-gradient-to-br ${getGradient(index)} opacity-50`} />
       )}
       
       {/* Text Overlay */}
-      <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-8">
+      <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-8 pointer-events-none">
         <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
-           <p className="text-2xl sm:text-3xl font-bold text-white leading-tight tracking-tight drop-shadow-md">
+           <p className="text-xl sm:text-2xl font-bold text-white leading-snug tracking-tight drop-shadow-lg shadow-black">
             {children}
            </p>
            {/* Decorative line */}
-           <div className="w-12 h-1 bg-indigo-500 mt-4 rounded-full opacity-80" />
+           <div className="w-12 h-1 bg-indigo-500 mt-4 rounded-full opacity-90" />
         </div>
       </div>
     </div>

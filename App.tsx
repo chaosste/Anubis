@@ -35,12 +35,11 @@ export const App: React.FC = () => {
   };
 
   // Configuration for Intro Cards
-  // TODO: Replace these placeholder URLs with the actual paths to your uploaded images.
   const INTRO_CARDS = [
     {
       id: 1,
-      // Image: Green/Blue entwined figures
-      image: "images/a1.jpeg", 
+      // Image 1: The Cubist/Abstract Face
+      image: "Images/a1.jpg", 
       content: (
         <>
           This voice interface uses a granular interview approach from the discipline of <span className="text-indigo-400">microphenomenology</span>.
@@ -49,8 +48,8 @@ export const App: React.FC = () => {
     },
     {
       id: 2,
-      // Image: Pop Art Panther
-      image: "https://placehold.co/800x1000/0f172a/6366f1?text=Replace+with+Panther+Art", 
+      // Image 2: Green/Blue Entwined Figures
+      image: "Images/a2.jpg", 
       content: (
         <>
           Anubis listens, hoping to aid the meaningful integration of <span className="text-indigo-300">anomalous experiences</span>.
@@ -59,8 +58,8 @@ export const App: React.FC = () => {
     },
     {
       id: 3,
-      // Image: Woman with Turtles
-      image: "https://placehold.co/800x1000/0f172a/6366f1?text=Replace+with+Woman+Turtles+Art",
+      // Image 3: Pop Art Panther
+      image: "Images/a3.jpg",
       content: (
         <>
           Anubis will encourage you to examine details, to help your memory gather momentum and your vision flow clearly.
@@ -69,8 +68,8 @@ export const App: React.FC = () => {
     },
     {
       id: 4,
-      // Image: Complex Shamanic Vision
-      image: "https://placehold.co/800x1000/0f172a/6366f1?text=Replace+with+Shamanic+Vision+Art",
+      // Image 4: Woman with Turtles / Shamanic
+      image: "Images/a4.jpg",
       content: (
         <>
           Each trip is unique: it can be unusual, straightforward, proud, embarrassing, or all of the above.
@@ -79,7 +78,7 @@ export const App: React.FC = () => {
     },
     {
       id: 5,
-      // No Image - Gradient Fallback
+      // No Image - Uses Gradient Fallback
       image: undefined, 
       content: (
         <>
