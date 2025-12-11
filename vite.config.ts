@@ -3,15 +3,23 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
-  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
-  const env = loadEnv(mode, (process as any).cwd(), '');
+  const env = loadEnv(mode, process.cwd(), '');
   
-  // Use PORT env var if available (Cloud Run default), otherwise fallback to 8080 for preview
-  const port = env.PORT ? parseInt(env.PORT) : 8080;
+  // CRITICAL: Prioritize system PORT environment variable (Cloud Run)
+  // loadEnv does not automatically capture system variables unless they are in .env files.
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+
+  // Merge critical system variables into the env object for the define block
+  // This ensures API_KEY is passed through if it exists in the build environment
+  if (process.env.API_KEY) {
+    env.API_KEY = process.env.API_KEY;
+  }
 
   return {
     plugins: [react()],
     define: {
+      // Expose env vars to the client code.
+      // Note: If API_KEY is not available at BUILD time, it will be undefined here.
       'process.env': env
     },
     server: {
