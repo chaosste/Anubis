@@ -23,5 +23,4 @@ export interface AudioSettings {
   voiceName: string;
   model: string;
   pitch: number; // Semitones: -5 to +5
-  accent: string;
 }

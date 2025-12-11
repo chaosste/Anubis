@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Settings2, Mic, ChevronDown, Zap, Sparkles, Sliders, MapPin } from 'lucide-react';
+import { X, Settings2, Mic, ChevronDown, Zap, Sparkles, Sliders } from 'lucide-react';
 import { AudioSettings } from '../types';
-import { MODEL_NAME, FAST_MODEL_NAME, ACCENTS } from '../constants';
+import { MODEL_NAME, FAST_MODEL_NAME } from '../constants';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -64,33 +64,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <Mic className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-colors duration-300 peer-focus:text-indigo-400 pointer-events-none" />
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-indigo-400 pointer-events-none" />
             </div>
-          </div>
-
-          <div className="h-px bg-slate-800" />
-
-          {/* Accent Selection */}
-          <div>
-             <label className="block text-sm font-medium text-slate-400 mb-2">
-              Regional Accent
-            </label>
-            <div className="relative group">
-              <select
-                value={settings.accent}
-                onChange={(e) => onSettingsChange({ ...settings, accent: e.target.value })}
-                className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10 text-sm sm:text-base"
-              >
-                {Object.keys(ACCENTS).map((accentKey) => (
-                  <option key={accentKey} value={accentKey} className="bg-slate-900">
-                    {accentKey}
-                  </option>
-                ))}
-              </select>
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-colors duration-300 peer-focus:text-indigo-400 pointer-events-none" />
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-indigo-400 pointer-events-none" />
-            </div>
-             <p className="mt-2 text-xs text-slate-500">
-              Modifies phrasing and intonation of the selected voice.
-            </p>
           </div>
 
           <div className="h-px bg-slate-800" />

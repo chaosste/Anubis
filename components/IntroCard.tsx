@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ImageOff } from 'lucide-react';
 
 interface IntroCardProps {
   children: React.ReactNode;
@@ -12,6 +13,14 @@ const IntroCard: React.FC<IntroCardProps> = ({ children, image, index }) => {
   // Use image if provided and no error occurred loading it
   const showImage = image && !hasError;
 
+  const handleImageError = () => {
+    // Only log if we haven't already marked it as errored to prevent console spam
+    if (!hasError) {
+      console.warn(`Failed to load image at path: ${image}`);
+      setHasError(true);
+    }
+  };
+
   return (
     <div 
       className="relative flex-none w-[85vw] sm:w-[350px] aspect-[3/4] overflow-hidden rounded-3xl bg-black border border-slate-800 shadow-2xl snap-center group isolate"
@@ -22,14 +31,21 @@ const IntroCard: React.FC<IntroCardProps> = ({ children, image, index }) => {
           <img 
             src={image} 
             alt="Visual context for microphenomenology" 
-            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 opacity-90"
-            onError={() => setHasError(true)}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
+            onError={handleImageError}
           />
           {/* Gradient Overlay for legibility */}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
       ) : (
-        <div className={`absolute inset-0 z-0 bg-gradient-to-br ${getGradient(index)} opacity-50`} />
+        <div className={`absolute inset-0 z-0 bg-gradient-to-br ${getGradient(index)} opacity-50`}>
+           {/* Fallback pattern or icon if image failed */}
+           {hasError && (
+             <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                <ImageOff className="w-24 h-24 text-white" />
+             </div>
+           )}
+        </div>
       )}
       
       {/* Text Overlay */}

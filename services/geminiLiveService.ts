@@ -117,7 +117,7 @@ export const useGeminiLive = () => {
         model: settings.model,
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: getSystemInstruction(settings.accent),
+          systemInstruction: getSystemInstruction(),
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: apiVoiceName } },
           },

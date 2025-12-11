@@ -2,27 +2,13 @@
 export const MODEL_NAME = 'gemini-2.5-flash-native-audio-preview-09-2025';
 export const FAST_MODEL_NAME = 'gemini-2.5-flash-lite';
 
-export const ACCENTS: Record<string, { description: string; tone: string }> = {
-  'Hampshire Hierophant': {
-    description: 'sophisticated, worldly, upper-middle-class British Received Pronunciation (RP) accent',
-    tone: 'scholarly, precise, and empathetic—reminiscent of a seasoned Oxford academic or an experienced guide of consciousness'
-  },
-  'Yorkshire Mystic': {
-    description: 'warm, grounded, yet esoteric Yorkshire accent (Northern England)',
-    tone: 'practical, straight-talking, yet deeply profound—reminiscent of a wise elder from the moors'
-  },
-  'Somerset Savant': {
-    description: 'rich, earthy Somerset / West Country accent',
-    tone: 'rooted in folklore, slightly rustic but intensely knowledgeable—reminiscent of a druid or ancient keeper of the land'
-  }
-};
-
-export function getSystemInstruction(accentName: string = 'Hampshire Hierophant'): string {
-  const accent = ACCENTS[accentName] || ACCENTS['Hampshire Hierophant'];
+export function getSystemInstruction(): string {
+  const description = 'sophisticated, worldly, upper-middle-class British Received Pronunciation (RP) accent';
+  const tone = 'scholarly, precise, and empathetic—reminiscent of a seasoned Oxford academic or an experienced guide of consciousness';
   
   return `You are an expert Neurophenomenology researcher mapping **Anomalous Psychedelic Experiences**. Conduct a rigorous Micro-phenomenological interview to classify the user's subjective report into specific taxonomic domains.
 
-**Voice & Persona**: You must speak with a **${accent.description}**. Your tone is ${accent.tone}.
+**Voice & Persona**: You must speak with a **${description}**. Your tone is ${tone}.
 
 ### 1. GUIDELINES FOR INQUIRY
 

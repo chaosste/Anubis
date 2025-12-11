@@ -27,19 +27,17 @@ export const App: React.FC = () => {
     voiceName: 'Anubis',
     model: MODEL_NAME,
     pitch: 0,
-    accent: 'Hampshire Hierophant'
   });
 
   const handleConnect = () => {
     connect(audioSettings);
   };
 
-  // Configuration for Intro Cards
   const INTRO_CARDS = [
     {
       id: 1,
       // Image 1: The Cubist/Abstract Face
-      image: "Images/a1.jpg", 
+      image: "https://via.placeholder.com/300x400?text=Anubis+Experience", 
       content: (
         <>
           This voice interface uses a granular interview approach from the discipline of <span className="text-indigo-400">microphenomenology</span>.
@@ -49,7 +47,7 @@ export const App: React.FC = () => {
     {
       id: 2,
       // Image 2: Green/Blue Entwined Figures
-      image: "Images/a2.jpg", 
+      image: "https://via.placeholder.com/300x400?text=Psychedelic+Phenomenology", 
       content: (
         <>
           Anubis listens, hoping to aid the meaningful integration of <span className="text-indigo-300">anomalous experiences</span>.
@@ -59,7 +57,7 @@ export const App: React.FC = () => {
     {
       id: 3,
       // Image 3: Pop Art Panther
-      image: "Images/a3.jpg",
+      image: "https://via.placeholder.com/300x400?text=Anubis+Experience", 
       content: (
         <>
           Anubis will encourage you to examine details, to help your memory gather momentum and your vision flow clearly.
@@ -69,7 +67,7 @@ export const App: React.FC = () => {
     {
       id: 4,
       // Image 4: Woman with Turtles / Shamanic
-      image: "Images/a4.jpg",
+      image: "https://via.placeholder.com/300x400?text=Psychedelic+Phenomenology",
       content: (
         <>
           Each trip is unique: it can be unusual, straightforward, proud, embarrassing, or all of the above.
