@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mic, Square, AlertCircle, Headphones } from 'lucide-react';
+import { Mic, Square, AlertCircle } from 'lucide-react';
 import { ConnectionState } from '../types';
 
 interface ControlsProps {
@@ -40,13 +40,10 @@ const Controls: React.FC<ControlsProps> = ({ connectionState, onConnect, onDisco
                     <Mic className="w-6 h-6" />
                 </span>
                 <span className="absolute flex items-center justify-center w-full h-full text-indigo-400 transition-all duration-300 transform group-hover:translate-x-full ease">
-                    Begin Interview
+                    Commence Session
                 </span>
-                <span className="relative invisible">Begin Interview</span>
+                <span className="relative invisible">Commence Session</span>
             </button>
-            <p className="mt-4 text-xs sm:text-sm text-slate-500 max-w-xs mx-auto">
-                Please use headphones for the best experience.
-            </p>
         </div>
       ) : (
         <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
@@ -66,7 +63,7 @@ const Controls: React.FC<ControlsProps> = ({ connectionState, onConnect, onDisco
             )}
           </button>
           <span className="mt-3 text-[10px] sm:text-xs font-medium tracking-wider text-slate-500 uppercase">
-             {isConnecting ? 'Connecting...' : 'End Session'}
+             {isConnecting ? 'Connecting...' : 'Session in Progress'}
           </span>
         </div>
       )}

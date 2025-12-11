@@ -3,9 +3,10 @@ import React, { useEffect, useRef } from 'react';
 interface VisualizerProps {
   volume: number;
   isActive: boolean;
+  voiceName: string;
 }
 
-const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive }) => {
+const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive, voiceName }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
   const currentRadiusRef = useRef<number>(50);
@@ -102,7 +103,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive }) => {
       {!isActive && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <p className="text-slate-400 font-light tracking-widest text-xs sm:text-sm uppercase">
-            Ready to Start
+            {voiceName} is Ready
           </p>
         </div>
       )}

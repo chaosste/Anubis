@@ -1,4 +1,3 @@
-
 export enum ConnectionState {
   DISCONNECTED = 'DISCONNECTED',
   CONNECTING = 'CONNECTING',
@@ -13,14 +12,17 @@ export interface TranscriptionItem {
   isComplete: boolean;
 }
 
-export interface AudioVisualizerData {
-  volume: number; // 0 to 1
-}
-
 export interface AudioSettings {
   sampleRate: number;
   bitDepth: number;
   voiceName: string;
   model: string;
-  pitch: number; // Semitones: -5 to +5
+}
+
+export interface VoiceProfile {
+  id: string;
+  name: string;
+  apiVoice: string;
+  systemDescription: string;
+  pitchShift: number; // Semitones
 }

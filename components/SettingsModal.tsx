@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Settings2, Mic, ChevronDown, Zap, Sparkles, Sliders } from 'lucide-react';
+import { X, Settings2, Mic, ChevronDown, Zap, Sparkles } from 'lucide-react';
 import { AudioSettings } from '../types';
-import { MODEL_NAME, FAST_MODEL_NAME } from '../constants';
+import { MODEL_NAME, FAST_MODEL_NAME, VOICES } from '../constants';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -17,11 +17,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   onSettingsChange 
 }) => {
   if (!isOpen) return null;
-
-  const voices = [
-    { id: 'Ishtar', name: 'Ishtar', desc: 'Esoteric & Liminal' },
-    { id: 'Anubis', name: 'Anubis', desc: 'Deep, Mysterious & Rumbling' }
-  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -55,40 +50,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 onChange={(e) => onSettingsChange({ ...settings, voiceName: e.target.value })}
                 className="peer w-full appearance-none p-3 pl-10 pr-10 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 font-medium hover:border-slate-600 focus:shadow-lg focus:shadow-indigo-500/10 text-sm sm:text-base"
               >
-                {voices.map((voice) => (
+                {Object.values(VOICES).map((voice) => (
                   <option key={voice.id} value={voice.id} className="bg-slate-900">
-                    {voice.name} — {voice.desc}
+                    {voice.name}
                   </option>
                 ))}
               </select>
               <Mic className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-colors duration-300 peer-focus:text-indigo-400 pointer-events-none" />
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-indigo-400 pointer-events-none" />
-            </div>
-          </div>
-
-          <div className="h-px bg-slate-800" />
-
-          {/* Pitch Adjustment */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-slate-400">
-                Voice Pitch
-              </label>
-              <span className="text-xs font-mono text-indigo-400">
-                {settings.pitch > 0 ? '+' : ''}{settings.pitch} Semitones
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Sliders className="w-4 h-4 text-slate-500" />
-              <input
-                type="range"
-                min="-5"
-                max="5"
-                step="0.5"
-                value={settings.pitch}
-                onChange={(e) => onSettingsChange({ ...settings, pitch: parseFloat(e.target.value) })}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all"
-              />
             </div>
           </div>
 

@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { ConnectionState, TranscriptionItem, AudioSettings } from '../types';
 import { createPcmBlob, base64Decode, pcmToAudioBuffer } from './audioUtils';
-import { getSystemInstruction } from '../constants';
+import { getSystemInstruction, VOICES } from '../constants';
 
 export const useGeminiLive = () => {
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
@@ -25,7 +25,6 @@ export const useGeminiLive = () => {
   
   // Session Reference
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
-  const currentTurnIdRef = useRef<string>('');
 
   // Reconnection Logic Refs
   const audioSettingsRef = useRef<AudioSettings | null>(null);
@@ -105,21 +104,15 @@ export const useGeminiLive = () => {
       // 3. Initialize Gemini Client
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
-      // Map custom voice names to valid API voice names
-      let apiVoiceName = settings.voiceName;
-      if (apiVoiceName === 'Ishtar') {
-        apiVoiceName = 'Kore'; // Mapping to a valid female voice to contrast with Fenrir/Charon
-      } else if (apiVoiceName === 'Anubis') {
-        apiVoiceName = 'Fenrir'; // Mapping to Fenrir for the deep base
-      }
+      const voiceProfile = VOICES[settings.voiceName] || VOICES['Anubis'];
       
       const config = {
         model: settings.model,
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: getSystemInstruction(),
+          systemInstruction: getSystemInstruction(settings.voiceName),
           speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: apiVoiceName } },
+            voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceProfile.apiVoice } },
           },
           inputAudioTranscription: {}, 
           outputAudioTranscription: {},
@@ -261,13 +254,9 @@ export const useGeminiLive = () => {
         const source = outputCtx.createBufferSource();
         source.buffer = audioBuffer;
         
-        // Apply pitch shift (detune) if configured
-        let pitch = audioSettingsRef.current?.pitch || 0;
-        
-        // If Anubis voice is selected, apply a specific deep offset
-        if (audioSettingsRef.current?.voiceName === 'Anubis') {
-            pitch -= 2.5; // Deepen by 2.5 semitones to sound like a rumbling deity
-        }
+        // Pitch/Speed adjustment based on voice profile
+        const voiceProfile = VOICES[audioSettingsRef.current?.voiceName || 'Anubis'] || VOICES['Anubis'];
+        const pitch = voiceProfile.pitchShift;
 
         if (pitch !== 0) {
           // detune is in cents (1 semitone = 100 cents)
