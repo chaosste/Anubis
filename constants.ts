@@ -15,7 +15,7 @@ export const VOICES: Record<string, VoiceProfile> = {
     id: 'Ishtar',
     name: 'Ishtar',
     apiVoice: 'Kore',
-    systemDescription: 'dusky, sultry Arabic accent with the allure of a courtesan speaking British English. The tone should be warm, melodic, and intimate, inviting the user into a space of sacred confidence',
+    systemDescription: 'dusky, sultry voice with a rich, heavy Middle Eastern accent (Arabic inflection) speaking British English. The tone is that of an ancient temple courtesan: intimate, warm, luxurious, and hypnotic, like velvet. Invite the user into a space of sacred confidence with an exotic, captivating allure',
     pitchShift: 0
   }
 };

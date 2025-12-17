@@ -33,31 +33,33 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive, voiceName }) 
       const maxRadius = Math.min(width, height) / 2 - 20;
       const baseRadius = 60;
 
-      // Smooth interpolation for the radius
-      // Input volume is roughly 0.0 to 1.0 (sometimes slightly higher)
-      // We amp it up a bit for visual effect.
-      // We update this even when inactive so the radius decays smoothly to base if we restart.
-      const targetRadius = baseRadius + (volumeRef.current * 300); 
-      
-      // Ease towards target
-      currentRadiusRef.current += (targetRadius - currentRadiusRef.current) * 0.1;
-      
       // Clear the canvas immediately
       ctx.clearRect(0, 0, width, height);
 
       if (!isActive) {
-        // Draw idle state (breathing circle)
-        const breathe = 5 * Math.sin(Date.now() / 1000);
+        // Draw idle state (Subtle, calming "breathing" effect)
+        // Slower cycle (dividing by 2500ms) for a relaxed pace
+        const time = Date.now() / 2500;
+        const breathe = 4 * Math.sin(time); // Gentle radius variance (+/- 4px)
+        const opacity = 0.1 + 0.08 * Math.sin(time); // Soft opacity pulse (0.02 to 0.18)
+
         ctx.beginPath();
         ctx.arc(centerX, centerY, baseRadius + breathe, 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(99, 102, 241, 0.2)'; // Indigo 500 low opacity
+        ctx.fillStyle = `rgba(99, 102, 241, ${opacity})`; // Indigo 500 with variable low opacity
         ctx.fill();
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      } else {
-        // Draw Active State (Ripples/Blob)
         
+        // Very subtle ring
+        ctx.strokeStyle = `rgba(99, 102, 241, ${opacity + 0.1})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+      } else {
+        // Active State (Dynamic Audio Reactive)
+        
+        // Smooth interpolation for the radius
+        const targetRadius = baseRadius + (volumeRef.current * 300); 
+        currentRadiusRef.current += (targetRadius - currentRadiusRef.current) * 0.1;
+
         // Inner Core
         ctx.beginPath();
         ctx.arc(centerX, centerY, baseRadius, 0, 2 * Math.PI);
@@ -81,8 +83,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive, voiceName }) 
       animationRef.current = requestAnimationFrame(render);
     };
 
-    // Immediate render call ensures we clear the canvas and draw the correct state (Active or Idle)
-    // synchronously with the effect setup, preventing any lingering frames from the previous state.
+    // Immediate render call
     render();
 
     return () => {
@@ -90,7 +91,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive, voiceName }) 
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isActive]); // Only re-run loop setup when active state changes
+  }, [isActive]); 
 
   return (
     <div className="relative w-full h-48 sm:h-64 flex items-center justify-center">
@@ -102,7 +103,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive, voiceName }) 
       />
       {!isActive && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <p className="text-slate-400 font-light tracking-widest text-xs sm:text-sm uppercase">
+          <p className="text-slate-500/80 font-light tracking-widest text-xs sm:text-sm uppercase animate-pulse-slow">
             {voiceName} is Ready
           </p>
         </div>

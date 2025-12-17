@@ -210,8 +210,7 @@ export const App: React.FC = () => {
 
                {/* Username Pill */}
                {currentUser && (
-                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-mono font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 animate-in fade-in slide-in-from-left-2">
-                    <span className="opacity-70">USER</span>
+                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 animate-in fade-in slide-in-from-left-2">
                     <span className="text-white">{currentUser.username}</span>
                  </div>
                )}

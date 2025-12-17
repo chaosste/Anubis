@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { ConnectionState, TranscriptionItem, AudioSettings, StoredSession } from '../types';
+import { ConnectionState, TranscriptionItem, AudioSettings, StoredSession, VoiceProfile } from '../types';
 import { createPcmBlob, base64Decode, pcmToAudioBuffer } from './audioUtils';
 import { getSystemInstruction, VOICES, getWelcomeMessage, PROMPT_8S, getPrompt12s, MODEL_NAME, AUDIO_SAMPLE_RATE } from '../constants';
 import { userService } from './userService';
@@ -9,6 +9,23 @@ interface ActiveAudioSource {
   source: AudioBufferSourceNode;
   gain: GainNode;
 }
+
+// Helper to resolve voice profile with graceful fallback
+const getEffectiveVoiceProfile = (voiceName?: string): VoiceProfile => {
+  // 1. Check provided settings
+  if (voiceName && VOICES[voiceName]) {
+    return VOICES[voiceName];
+  }
+
+  // 2. Future: Check user preferences
+  // const user = userService.getCurrentUser();
+  // if (user?.preferredVoice && VOICES[user.preferredVoice]) {
+  //   return VOICES[user.preferredVoice];
+  // }
+
+  // 3. Default Fallback
+  return VOICES['Anubis'];
+};
 
 export const useGeminiLive = () => {
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
@@ -129,6 +146,9 @@ export const useGeminiLive = () => {
     isIntentionalDisconnectRef.current = false;
     audioSettingsRef.current = settings;
     
+    // Voice selection with robustness
+    const voiceProfile = getEffectiveVoiceProfile(settings.voiceName);
+
     promptLevelRef.current = 0;
     userHasSpokenRef.current = false;
     silenceStartTimestampRef.current = Date.now();
@@ -187,13 +207,13 @@ export const useGeminiLive = () => {
       recorder.start();
 
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const voiceProfile = VOICES[settings.voiceName] || VOICES['Anubis'];
       
       const config = {
         model: MODEL_NAME,
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: getSystemInstruction(settings.voiceName),
+          // Use ID for system instruction to ensure correct prompt logic is selected
+          systemInstruction: getSystemInstruction(voiceProfile.id), 
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceProfile.apiVoice } },
           },
@@ -208,12 +228,12 @@ export const useGeminiLive = () => {
           retryCountRef.current = 0; 
           canSendAudioRef.current = true;
           
-          // Trigger welcome message immediately upon connection
-          sendTextToSession(getWelcomeMessage(settings.voiceName));
-          promptLevelRef.current = 1; // Advance prompt level so silence monitor doesn't repeat it
+          // Use name (e.g., 'Anubis') for the welcome message string
+          sendTextToSession(getWelcomeMessage(voiceProfile.name));
+          promptLevelRef.current = 1; 
           silenceStartTimestampRef.current = Date.now();
 
-          startSilenceMonitor(settings.voiceName);
+          startSilenceMonitor(voiceProfile.name);
         },
         onmessage: async (message: LiveServerMessage) => {
           handleServerMessage(message);
@@ -256,7 +276,6 @@ export const useGeminiLive = () => {
       silenceIntervalRef.current = window.setInterval(() => {
         if (userHasSpokenRef.current) return;
         
-        // Use isPlayingRef to check if AI is currently outputting audio
         if (isPlayingRef.current) {
             silenceStartTimestampRef.current = Date.now();
             return;
@@ -264,9 +283,7 @@ export const useGeminiLive = () => {
 
         const silenceDuration = Date.now() - silenceStartTimestampRef.current;
         
-        // Prompt level 0 is now handled immediately in onopen, so we skip to level 1 logic
         if (promptLevelRef.current === 0 && silenceDuration > 2000) {
-             // Fallback if onopen didn't fire for some reason, though logic dictates it should have
              sendTextToSession(getWelcomeMessage(voiceName));
              promptLevelRef.current = 1;
              silenceStartTimestampRef.current = Date.now();
@@ -353,9 +370,8 @@ export const useGeminiLive = () => {
     const outputCtx = outputContextRef.current;
     if (!outputCtx) return;
 
-    // Handle Interruption first
     if (message.serverContent?.interrupted) {
-       audioQueueRef.current = []; // Clear queue
+       audioQueueRef.current = [];
        isPlayingRef.current = false;
        
        const now = outputCtx.currentTime;
@@ -411,7 +427,7 @@ export const useGeminiLive = () => {
       const source = ctx.createBufferSource();
       source.buffer = buffer;
       
-      const voiceProfile = VOICES[audioSettingsRef.current?.voiceName || 'Anubis'] || VOICES['Anubis'];
+      const voiceProfile = getEffectiveVoiceProfile(audioSettingsRef.current?.voiceName);
       if (voiceProfile.pitchShift !== 0) {
           source.detune.value = voiceProfile.pitchShift * 100;
       }
@@ -463,8 +479,6 @@ export const useGeminiLive = () => {
       if (!transcripts.length) return;
       
       const sessionBlob = recordedBlob; 
-      // If we call this immediately after disconnect, the blob state might be ready or in ref
-      // We'll prefer the state blob, but check the ref chunks if needed (fallback)
       
       let finalBlob = sessionBlob;
       if (!finalBlob && recordedChunksRef.current.length > 0) {
