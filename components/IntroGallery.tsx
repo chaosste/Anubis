@@ -10,7 +10,7 @@ const IntroGallery: React.FC<IntroGalleryProps> = ({ onLoginClick }) => {
     const { ref, isDragging, events } = useDraggableScroll();
 
     const CARDS = [
-        { id: 1, content: <>Granular witnessing empowered by <span className="text-indigo-400">microphenomenology</span> interview techniques.</> },
+        { id: 1, content: <>Granular witnessing empowered by <span className="text-indigo-400">neurophenomenology</span> interview techniques.</> },
         { id: 2, content: <>Anubis listens, aiding meaningful integration of <span className="text-indigo-300">anomalous experiences</span>.</> },
         { id: 3, content: <>Explore the meaning, sensation, accents, atmosphere, shifts and ambiguity of your <span className="text-indigo-400">visionary states</span>.</> },
         { id: 4, content: <>Anubis gently encourages <span className="text-indigo-300">scrutiny</span>: memory gathers momentum and vision flows more clearly.</> },
