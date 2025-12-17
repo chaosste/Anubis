@@ -71,6 +71,8 @@ export const App: React.FC = () => {
     setShowSaveOptions(false);
   };
 
+  const hasUserSpoken = transcripts.some(t => t.role === 'user');
+
   return (
     <div className="min-h-screen bg-black text-slate-200 font-sans font-light selection:bg-indigo-500/30">
       
@@ -212,6 +214,7 @@ export const App: React.FC = () => {
                 onConnect={handleConnect}
                 onDisconnect={disconnect}
                 error={error}
+                hasUserSpoken={hasUserSpoken}
               />
             </div>
           </div>

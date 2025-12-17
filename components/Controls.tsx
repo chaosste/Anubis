@@ -7,9 +7,10 @@ interface ControlsProps {
   onConnect: () => void;
   onDisconnect: () => void;
   error: string | null;
+  hasUserSpoken: boolean;
 }
 
-const Controls: React.FC<ControlsProps> = ({ connectionState, onConnect, onDisconnect, error }) => {
+const Controls: React.FC<ControlsProps> = ({ connectionState, onConnect, onDisconnect, error, hasUserSpoken }) => {
   const isConnected = connectionState === ConnectionState.CONNECTED;
   const isConnecting = connectionState === ConnectionState.CONNECTING;
 
@@ -64,6 +65,11 @@ const Controls: React.FC<ControlsProps> = ({ connectionState, onConnect, onDisco
           </button>
           <span className="mt-3 text-[10px] sm:text-xs font-medium tracking-wider text-slate-500 uppercase">
              {isConnecting ? 'Connecting...' : 'Session in Progress'}
+          </span>
+          <span className={`mt-1 text-[10px] font-medium text-indigo-400/80 transition-opacity duration-1000 ${
+             isConnected && !hasUserSpoken ? 'opacity-100' : 'opacity-0'
+          }`}>
+            Speak to begin
           </span>
         </div>
       )}
