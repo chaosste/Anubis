@@ -1,13 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useGeminiLive } from './services/geminiLiveService';
+import { userService, fileService } from './services/userService';
 import Visualizer from './components/Visualizer';
 import Controls from './components/Controls';
 import Transcript from './components/Transcript';
 import SettingsModal from './components/SettingsModal';
 import IntroCard from './components/IntroCard';
-import { ConnectionState, AudioSettings } from './types';
-import { History, Mic2, MoreVertical } from 'lucide-react';
-import { MODEL_NAME } from './constants';
+import AuthModal from './components/AuthModal';
+import HistoryModal from './components/HistoryModal';
+import { ConnectionState, AudioSettings, User } from './types';
+import { LogIn, LogOut, FileText, FileAudio, MoreVertical } from 'lucide-react';
 
 const AnkhIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -21,19 +23,58 @@ export const App: React.FC = () => {
   const { 
     connect, 
     disconnect, 
+    saveCurrentSession,
     connectionState, 
     volume, 
     transcripts, 
-    error 
+    error,
+    recordedBlob 
   } = useGeminiLive();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [audioSettings, setAudioSettings] = useState<AudioSettings>({
-    sampleRate: 16000,
-    bitDepth: 16,
     voiceName: 'Anubis',
-    model: MODEL_NAME,
   });
+  
+  // State to track if user has dismissed the "Login to save" prompt
+  const [hasDismissedLoginPrompt, setHasDismissedLoginPrompt] = useState(false);
+
+  // Check auth on load
+  useEffect(() => {
+    const user = userService.getCurrentUser();
+    if (user) setCurrentUser(user);
+  }, []);
+
+  const handleLogout = () => {
+    userService.logout();
+    setCurrentUser(null);
+  };
+
+  // Logic to show save options when session ends
+  const [showSaveOptions, setShowSaveOptions] = useState(false);
+
+  // Detect disconnect and handle saving/prompts
+  useEffect(() => {
+    if (connectionState === ConnectionState.DISCONNECTED) {
+       // Only trigger if we actually had a conversation
+       if (transcripts.length > 0 || recordedBlob) {
+           if (currentUser) {
+               // Auto-save for logged-in users
+               saveCurrentSession(currentUser.username)
+                 .then(() => setShowSaveOptions(true))
+                 .catch(console.error);
+           } else {
+               // Show prompt for guests (if not dismissed)
+               setShowSaveOptions(true);
+           }
+       }
+    } else if (connectionState === ConnectionState.CONNECTING) {
+      setShowSaveOptions(false);
+    }
+  }, [connectionState, transcripts.length, recordedBlob, currentUser, saveCurrentSession]);
 
   // Drag-to-scroll state
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -43,6 +84,7 @@ export const App: React.FC = () => {
 
   const handleConnect = () => {
     connect(audioSettings);
+    setShowSaveOptions(false);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -109,6 +151,22 @@ export const App: React.FC = () => {
          Each trip is <span className="text-indigo-400">unique</span>: it can be elusive, ecstatic, bizarre, sombre, adoring, contrary, all at once.
         </>
       )
+    },
+    {
+      id: 6,
+      content: (
+        <>
+         Choose from two guides, psychopomp Anubis or goddess <span className="text-indigo-400">Ishtar</span>.
+        </>
+      )
+    },
+    {
+      id: 7,
+      content: (
+        <>
+          Experiences are not recorded. You can <button onClick={() => setIsAuthOpen(true)} className="text-indigo-400 hover:text-indigo-300 font-medium underline underline-offset-4 decoration-indigo-500/30 hover:decoration-indigo-400 transition-all pointer-events-auto">log in</button> to store them safely on your computer.
+        </>
+      )
     }
   ];
 
@@ -125,11 +183,21 @@ export const App: React.FC = () => {
 
             {/* Status Section */}
             <div className="flex items-center gap-2">
+               {/* Voice Pill */}
                <div className="text-[10px] font-mono text-slate-400/80 bg-slate-900/50 px-2 py-1 rounded-full border border-slate-800 flex items-center gap-1.5">
                   <span className="text-indigo-500/70 hidden sm:inline">VOICE</span>
                   <span className="text-slate-300">{audioSettings.voiceName}</span>
                </div>
 
+               {/* Username Pill */}
+               {currentUser && (
+                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-mono font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 animate-in fade-in slide-in-from-left-2">
+                    <span className="opacity-70">USER</span>
+                    <span className="text-white">{currentUser.username}</span>
+                 </div>
+               )}
+
+               {/* Status Pill */}
                <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-medium border transition-colors duration-200 ${
                   connectionState === ConnectionState.CONNECTED 
                     ? 'bg-green-950/30 text-green-300 border-green-900/50'
@@ -148,10 +216,25 @@ export const App: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-3 sm:gap-4">
-             <div className="hidden sm:flex items-center gap-4 text-sm text-slate-400 mr-2 sm:mr-4">
-                <span className="flex items-center gap-1"><History size={16}/> Evocation</span>
-                <span className="flex items-center gap-1"><Mic2 size={16}/> Investigation</span>
-             </div>
+             {currentUser ? (
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={handleLogout}
+                    className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition-colors"
+                    title="Logout"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </div>
+             ) : (
+                <button 
+                  onClick={() => setIsAuthOpen(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-full transition-colors"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Login</span>
+                </button>
+             )}
              
              <button 
                onClick={() => setIsSettingsOpen(true)}
@@ -171,7 +254,7 @@ export const App: React.FC = () => {
 
       <main className="max-w-6xl mx-auto px-0 sm:px-4 py-6 sm:py-12 flex flex-col items-center w-full">
         
-        {/* Intro Gallery (only when disconnected and no history) */}
+        {/* Intro Gallery */}
         {connectionState === ConnectionState.DISCONNECTED && transcripts.length === 0 && (
           <div className="w-full mb-6 sm:mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
              <div className="px-4 mb-4 sm:mb-6">
@@ -180,7 +263,6 @@ export const App: React.FC = () => {
                 </h2>
              </div>
              
-             {/* Horizontal Scroll Gallery */}
              <div 
                ref={scrollRef}
                onMouseDown={handleMouseDown}
@@ -190,14 +272,11 @@ export const App: React.FC = () => {
                style={{ scrollSnapType: isDragging ? 'none' : 'x mandatory' }}
                className={`w-full overflow-x-auto pb-6 pt-2 px-4 flex gap-4 snap-x snap-mandatory no-scrollbar transition-all ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
              >
-                
                 {INTRO_CARDS.map((card, index) => (
                   <IntroCard key={card.id} index={index}>
                     {card.content}
                   </IntroCard>
                 ))}
-
-                {/* Spacer for right padding scroll */}
                 <div className="w-1 flex-none" />
              </div>
           </div>
@@ -216,10 +295,69 @@ export const App: React.FC = () => {
                     voiceName={audioSettings.voiceName}
                   />
                   
+                  {/* Save Session Overlay */}
+                  {showSaveOptions && currentUser && (
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center animate-in fade-in z-20 rounded-xl">
+                      <div className="bg-slate-900 p-6 rounded-2xl border border-slate-700 shadow-2xl max-w-sm w-full text-center">
+                        <h3 className="text-xl font-semibold text-white mb-2">Session Archived</h3>
+                        <p className="text-slate-400 text-sm mb-6">Your journey has been saved to your history.</p>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          <button 
+                             onClick={() => fileService.saveTranscript(currentUser.username, transcripts)}
+                             className="flex flex-col items-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl transition-all"
+                          >
+                             <FileText className="w-6 h-6 text-indigo-400" />
+                             <span className="text-xs font-medium">Export Text</span>
+                          </button>
+                          
+                          <button 
+                             onClick={() => recordedBlob && fileService.saveAudio(currentUser.username, recordedBlob)}
+                             disabled={!recordedBlob}
+                             className={`flex flex-col items-center gap-2 p-3 border rounded-xl transition-all ${recordedBlob ? 'bg-slate-800 hover:bg-slate-700 border-slate-600' : 'bg-slate-900 border-slate-800 opacity-50 cursor-not-allowed'}`}
+                          >
+                             <FileAudio className="w-6 h-6 text-rose-400" />
+                             <span className="text-xs font-medium">Export Audio</span>
+                          </button>
+                        </div>
+                        
+                        <button 
+                          onClick={() => setShowSaveOptions(false)}
+                          className="mt-6 text-xs text-slate-500 hover:text-white transition-colors"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {showSaveOptions && !currentUser && !hasDismissedLoginPrompt && (
+                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center animate-in fade-in z-20 rounded-xl">
+                        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-700 shadow-2xl max-w-sm w-full text-center">
+                          <p className="text-slate-300 mb-4">Login to save your session recording and transcript to your history.</p>
+                          <button 
+                            onClick={() => setIsAuthOpen(true)}
+                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-medium transition-colors"
+                          >
+                            Login / Signup
+                          </button>
+                          <button 
+                            onClick={() => {
+                                setShowSaveOptions(false);
+                                setHasDismissedLoginPrompt(true);
+                            }}
+                            className="block w-full mt-4 text-xs text-slate-500 hover:text-white transition-colors"
+                          >
+                            Dismiss (Don't show again)
+                          </button>
+                        </div>
+                     </div>
+                  )}
+
                   {/* Status Badge */}
                   <div className="absolute top-0 right-0 flex flex-col items-end sm:flex-row sm:items-center gap-2">
                       <span className="text-[10px] sm:text-xs font-mono text-slate-400/80 backdrop-blur-sm bg-black/20 px-2 py-0.5 rounded-full border border-white/10">
-                        {audioSettings.sampleRate / 1000}kHz / {audioSettings.bitDepth}-bit
+                        16kHz / 16-bit
                       </span>
                       <span className={`inline-flex items-center px-2 py-0.5 sm:px-2.5 rounded-full text-[10px] sm:text-xs font-medium transition-colors duration-200 backdrop-blur-sm ${
                         connectionState === ConnectionState.CONNECTED 
@@ -278,7 +416,25 @@ export const App: React.FC = () => {
         onClose={() => setIsSettingsOpen(false)}
         settings={audioSettings}
         onSettingsChange={setAudioSettings}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenHistory={() => setIsHistoryOpen(true)}
       />
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onLoginSuccess={setCurrentUser}
+      />
+
+      {/* History Modal */}
+      {currentUser && (
+        <HistoryModal 
+            isOpen={isHistoryOpen}
+            onClose={() => setIsHistoryOpen(false)}
+            username={currentUser.username}
+        />
+      )}
     </div>
   );
 };

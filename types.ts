@@ -13,10 +13,7 @@ export interface TranscriptionItem {
 }
 
 export interface AudioSettings {
-  sampleRate: number;
-  bitDepth: number;
   voiceName: string;
-  model: string;
 }
 
 export interface VoiceProfile {
@@ -25,4 +22,16 @@ export interface VoiceProfile {
   apiVoice: string;
   systemDescription: string;
   pitchShift: number; // Semitones
+}
+
+export interface User {
+  username: string;
+  passwordHash: string; // Stored locally
+}
+
+export interface StoredSession {
+  id: string;
+  timestamp: number;
+  transcripts: TranscriptionItem[];
+  audioBlob?: Blob; // Not stored in localStorage, but handled in memory for download
 }

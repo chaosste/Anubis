@@ -51,11 +51,39 @@ const LotusIcon = ({ className }: { className?: string }) => (
      <path d="M12 21c-4-5-7-10-7-14a7 7 0 0 1 14 0c0 4-3 9-7 14z" />
      <path d="M12 21c4-5 8-8 10-9" opacity="0.5" />
      <path d="M12 21c-4-5-8-8-10-9" opacity="0.5" />
-     <path d="M12 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+     <path d="M12 10a2 2 0 1 0 0-4 2 2 0 0 0 4z" />
   </svg>
 );
 
-const ICONS = [PyramidIcon, EyeIcon, AnkhIcon, ScarabIcon, LotusIcon];
+const StarIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3 3-6z" />
+    <circle cx="12" cy="12" r="3" />
+    <circle cx="12" cy="12" r="6" opacity="0.3" />
+  </svg>
+);
+
+const CylinderIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    {/* Cylinder Body */}
+    <path d="M7 5h10" strokeLinecap="butt"/>
+    <path d="M7 19h10" strokeLinecap="butt"/>
+    <path d="M7 5c-1.66 0-3 3.13-3 7s1.34 7 3 7" />
+    <path d="M17 5c1.66 0 3 3.13 3 7s-1.34 7-3 7" />
+    <ellipse cx="7" cy="12" rx="3" ry="7" />
+    
+    {/* Engravings */}
+    <path d="M11 10c0 0 2-2 4 0" opacity="0.8"/>
+    <path d="M13 12c0 0-1 1-2 1" opacity="0.8"/>
+    <circle cx="13" cy="10" r="0.5" fill="currentColor"/>
+    
+    <path d="M11 15h3" opacity="0.6"/>
+    <path d="M11 8h1" opacity="0.6"/>
+    <path d="M14 8h1" opacity="0.6"/>
+  </svg>
+);
+
+const ICONS = [PyramidIcon, EyeIcon, AnkhIcon, ScarabIcon, LotusIcon, StarIcon, CylinderIcon];
 
 const IntroCard: React.FC<IntroCardProps> = ({ children, index }) => {
   // Select icon based on index
@@ -99,7 +127,9 @@ function getGradient(index: number): string {
     'from-slate-900 via-slate-800 to-indigo-950',
     'from-indigo-950 via-slate-900 to-black',
     'from-slate-900 via-purple-950/30 to-slate-900',
-    'from-slate-800 via-slate-900 to-slate-800'
+    'from-slate-800 via-slate-900 to-slate-800',
+    'from-indigo-900 via-blue-900 to-slate-900',
+    'from-emerald-950 via-slate-900 to-black'
   ];
   return gradients[index % gradients.length];
 }

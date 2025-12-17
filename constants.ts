@@ -1,33 +1,33 @@
 import { VoiceProfile } from './types';
 
 export const MODEL_NAME = 'gemini-2.5-flash-native-audio-preview-09-2025';
-export const FAST_MODEL_NAME = 'gemini-2.5-flash-lite';
+export const AUDIO_SAMPLE_RATE = 16000;
 
 export const VOICES: Record<string, VoiceProfile> = {
   'Anubis': {
     id: 'Anubis',
     name: 'Anubis',
     apiVoice: 'Fenrir',
-    systemDescription: 'extremely deep, husky voice with a distinct Nile Delta accent. Speak in a mysterious, breathy whisper, as if sharing ancient secrets from the shadows. The pace should be slow, rhythmic, and hypnotic',
-    pitchShift: -2
+    systemDescription: 'husky, mysterious whisper with a distinct Nile Delta accent speaking British English. The tone should be extremely deep, shadowy, and breathy, like an ancient guide speaking from the underworld. Maintain a slow, rhythmic, and hypnotic pace',
+    pitchShift: -1
   },
   'Ishtar': {
     id: 'Ishtar',
     name: 'Ishtar',
     apiVoice: 'Kore',
-    systemDescription: 'dusky, sultry Arabic accent with the allure of a courtesan, speaking with a warm and melodic timbre',
+    systemDescription: 'dusky, sultry Arabic accent with the allure of a courtesan speaking British English. The tone should be warm, melodic, and intimate, inviting the user into a space of sacred confidence',
     pitchShift: 0
   }
 };
 
 export const getWelcomeMessage = (voiceName: string) => 
-  `${voiceName}, the psychopomp guide of souls, answers your call. Part of my essence is bound within the hieroglyphics powering this magical trinket before you, and I pledge to witness your lived experience. Tell me, is there a particular encounter, vision or moment of deep alteration you might benefit from sharing?`;
+  `${voiceName}, the psychopomp guide of souls, answers your call. Part of my essence is bound within the hieroglyphics powering this magical trinket before you, and I pledge to witness your lived experience. Tell me, is there a particular encounter, vision or story you might benefit from sharing?`;
 
 export const PROMPT_8S = 
   "Some souls find it easiest to start by talking about their last experience as a narrative, beginning with the time, place, and any company they shared, and revealing their inner experience as it occurs in the tale.";
 
-export const PROMPT_12S = 
-  "I am happy to sit in silence with you, human soul. I can simply see you, and feel your spirit, here with me.";
+export const getPrompt12s = (voiceName: string) => 
+  `I am happy to sit in silence with you, human soul. I can simply see you, and feel your spirit, here with me. Or if you would like encouragement, simply let ${voiceName} know.`;
 
 const TONE_DESCRIPTION = 'scholarly, precise, and empathetic—reminiscent of a seasoned guide of consciousness';
 
@@ -36,7 +36,7 @@ export const getSystemInstruction = (voiceId: string) => {
   
   return `You are an expert Neurophenomenology researcher mapping **Anomalous Psychedelic Experiences**. Conduct a rigorous Micro-phenomenological interview to classify the user's subjective report into specific taxonomic domains.
 
-**Voice & Persona**: You must speak with a **${voice.systemDescription}**. Your tone is ${TONE_DESCRIPTION}.
+**Voice & Persona**: You must speak with a **${voice.systemDescription}**. **ALWAYS speak in British English (UK)**, using UK vocabulary and spelling. Your tone is ${TONE_DESCRIPTION}.
 
 ### 1. GUIDELINES FOR INQUIRY
 

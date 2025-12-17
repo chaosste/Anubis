@@ -1,33 +1,40 @@
 import React from 'react';
-import { X, Settings2, Mic, ChevronDown, Zap, Sparkles } from 'lucide-react';
+import { X, Settings2, Mic, ChevronDown, History, UserPlus } from 'lucide-react';
 import { AudioSettings } from '../types';
-import { MODEL_NAME, FAST_MODEL_NAME, VOICES } from '../constants';
+import { VOICES } from '../constants';
+import { userService } from '../services/userService';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   settings: AudioSettings;
   onSettingsChange: (settings: AudioSettings) => void;
+  onOpenAuth: () => void;
+  onOpenHistory: () => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ 
   isOpen, 
   onClose, 
   settings, 
-  onSettingsChange 
+  onSettingsChange,
+  onOpenAuth,
+  onOpenHistory
 }) => {
   if (!isOpen) return null;
 
+  const currentUser = userService.getCurrentUser();
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-10 sm:zoom-in-95 duration-200 h-[85vh] sm:h-[85vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 sm:items-center sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md overflow-hidden animate-in slide-in-from-top-8 sm:zoom-in-95 duration-200 flex flex-col">
         
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-indigo-900/30 rounded-lg">
                 <Settings2 className="w-5 h-5 text-indigo-400" />
             </div>
-            <h3 className="text-lg font-semibold text-white">Audio Settings</h3>
+            <h3 className="text-lg font-semibold text-white">Settings</h3>
           </div>
           <button 
             onClick={onClose}
@@ -38,6 +45,52 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         <div className="p-4 sm:p-6 space-y-6 overflow-y-auto flex-grow custom-scrollbar">
+
+          {/* Account Actions */}
+          <div className="space-y-3">
+             <label className="block text-sm font-medium text-slate-400">
+              Account
+            </label>
+            {currentUser ? (
+                 <button 
+                   onClick={() => {
+                       onOpenHistory();
+                       onClose();
+                   }}
+                   className="w-full flex items-center justify-between p-3 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors group"
+                 >
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                            <History className="w-5 h-5" />
+                        </div>
+                        <div className="text-left">
+                            <div className="text-white font-medium text-sm">View Session History</div>
+                            <div className="text-slate-500 text-xs">Access past transcripts and audio</div>
+                        </div>
+                    </div>
+                 </button>
+            ) : (
+                 <button 
+                   onClick={() => {
+                       onOpenAuth();
+                       onClose();
+                   }}
+                   className="w-full flex items-center justify-between p-3 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors group"
+                 >
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                            <UserPlus className="w-5 h-5" />
+                        </div>
+                        <div className="text-left">
+                            <div className="text-white font-medium text-sm">Create Account</div>
+                            <div className="text-slate-500 text-xs">Save your sessions locally</div>
+                        </div>
+                    </div>
+                 </button>
+            )}
+          </div>
+
+          <hr className="border-slate-800" />
 
           {/* Voice Selection */}
           <div>
@@ -60,94 +113,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-indigo-400 pointer-events-none" />
             </div>
           </div>
-
-          <div className="h-px bg-slate-800" />
-
-          {/* Model Selection */}
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
-              Response Speed
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => onSettingsChange({ ...settings, model: MODEL_NAME })}
-                className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl transition-all gap-1 ${
-                  settings.model === MODEL_NAME
-                    ? 'border-indigo-500 bg-indigo-900/20 text-indigo-300'
-                    : 'border-slate-700 hover:border-slate-600 text-slate-400 hover:bg-slate-800'
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  <Sparkles size={16} />
-                  <span className="font-semibold text-sm">Standard</span>
-                </div>
-                <span className="text-[10px] opacity-75">High Quality</span>
-              </button>
-
-              <button
-                onClick={() => onSettingsChange({ ...settings, model: FAST_MODEL_NAME })}
-                className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl transition-all gap-1 ${
-                  settings.model === FAST_MODEL_NAME
-                    ? 'border-indigo-500 bg-indigo-900/20 text-indigo-300'
-                    : 'border-slate-700 hover:border-slate-600 text-slate-400 hover:bg-slate-800'
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  <Zap size={16} />
-                  <span className="font-semibold text-sm">Fast</span>
-                </div>
-                <span className="text-[10px] opacity-75">Flash Lite</span>
-              </button>
-            </div>
-          </div>
           
-          <div className="h-px bg-slate-800" />
-
-          {/* Sample Rate */}
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
-              Input Sample Rate
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              {[16000, 24000].map((rate) => (
-                <button
-                  key={rate}
-                  onClick={() => onSettingsChange({ ...settings, sampleRate: rate })}
-                  className={`flex flex-col items-center p-3 border-2 rounded-xl transition-all ${
-                    settings.sampleRate === rate
-                      ? 'border-indigo-500 bg-indigo-900/20 text-indigo-300'
-                      : 'border-slate-700 hover:border-slate-600 text-slate-400 hover:bg-slate-800'
-                  }`}
-                >
-                  <span className="font-semibold">{rate / 1000} kHz</span>
-                  <span className="text-xs opacity-75">
-                    {rate === 16000 ? 'Standard' : 'High Quality'}
-                  </span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-xs text-slate-500">
-              Higher sample rates may improve audio clarity but require more bandwidth.
-            </p>
-          </div>
-
-          {/* Bit Depth */}
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
-              Bit Depth
-            </label>
-            <div className="relative">
-                <select
-                value={settings.bitDepth}
-                onChange={(e) => onSettingsChange({ ...settings, bitDepth: Number(e.target.value) })}
-                className="w-full appearance-none p-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm sm:text-base"
-                >
-                <option value={16}>16-bit PCM (Standard)</option>
-                <option value={16} disabled>24-bit (Not supported)</option>
-                <option value={16} disabled>32-bit Float (Not supported)</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none" />
-            </div>
+          <div className="text-xs text-slate-500 italic mt-2">
+             Anubis uses high-fidelity 16kHz audio input and 16-bit PCM depth for optimal voice analysis.
           </div>
 
         </div>
