@@ -12,18 +12,9 @@ interface ActiveAudioSource {
 
 // Helper to resolve voice profile with graceful fallback
 const getEffectiveVoiceProfile = (voiceName?: string): VoiceProfile => {
-  // 1. Check provided settings
   if (voiceName && VOICES[voiceName]) {
     return VOICES[voiceName];
   }
-
-  // 2. Future: Check user preferences
-  // const user = userService.getCurrentUser();
-  // if (user?.preferredVoice && VOICES[user.preferredVoice]) {
-  //   return VOICES[user.preferredVoice];
-  // }
-
-  // 3. Default Fallback
   return VOICES['Anubis'];
 };
 
@@ -50,9 +41,8 @@ export const useGeminiLive = () => {
   const recordedChunksRef = useRef<Blob[]>([]);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
 
-  // Playback References (Queue System)
-  const audioQueueRef = useRef<AudioBuffer[]>([]);
-  const isPlayingRef = useRef<boolean>(false);
+  // Playback References (Scheduling System)
+  const nextStartTimeRef = useRef<number>(0);
   const activeSourcesRef = useRef<Set<ActiveAudioSource>>(new Set());
   
   // Session Reference
@@ -71,9 +61,11 @@ export const useGeminiLive = () => {
   const promptLevelRef = useRef<number>(0); 
   const silenceIntervalRef = useRef<number | null>(null);
   const userHasSpokenRef = useRef<boolean>(false);
+  const smoothedEnergyRef = useRef<number>(0);
 
   const SILENCE_DURATION = 5000; 
-  const SPEECH_ENERGY_THRESHOLD = 20; 
+  const SPEECH_ENERGY_THRESHOLD = 25; // Adjusted to be more robust against background noise
+  const ENERGY_SMOOTHING_FACTOR = 0.15; // Smoothing factor (0.0 - 1.0) to filter transient noise
 
   const cleanup = useCallback(() => {
     canSendAudioRef.current = false;
@@ -107,6 +99,14 @@ export const useGeminiLive = () => {
       mediaStreamRef.current = null;
     }
 
+    // Stop Output Sources
+    activeSourcesRef.current.forEach(({ source, gain }) => {
+      try { source.stop(); } catch(e) {}
+      try { gain.disconnect(); } catch(e) {}
+    });
+    activeSourcesRef.current.clear();
+    nextStartTimeRef.current = 0;
+
     // Close Contexts
     if (inputContextRef.current && inputContextRef.current.state !== 'closed') {
       inputContextRef.current.close();
@@ -123,19 +123,16 @@ export const useGeminiLive = () => {
         silenceIntervalRef.current = null;
     }
     
-    // Clear Audio Queue
-    audioQueueRef.current = [];
-    isPlayingRef.current = false;
-    activeSourcesRef.current.clear();
     recordingDestRef.current = null;
-
   }, []);
 
   const sendTextToSession = (text: string) => {
     sessionPromiseRef.current?.then((session: any) => {
+        // Try to send a text message to the session
+        // Note: This relies on the session object supporting 'send' for user text injection.
         if (typeof session.send === 'function') {
             session.send({ 
-                parts: [{ text: `System Instruction: Please say exactly the following text to the user: "${text}"` }],
+                parts: [{ text: text }],
                 turnComplete: true 
             });
         }
@@ -146,7 +143,6 @@ export const useGeminiLive = () => {
     isIntentionalDisconnectRef.current = false;
     audioSettingsRef.current = settings;
     
-    // Voice selection with robustness
     const voiceProfile = getEffectiveVoiceProfile(settings.voiceName);
 
     promptLevelRef.current = 0;
@@ -155,8 +151,9 @@ export const useGeminiLive = () => {
     recordedChunksRef.current = [];
     setRecordedBlob(null);
     canSendAudioRef.current = false;
-    audioQueueRef.current = [];
-    isPlayingRef.current = false;
+    nextStartTimeRef.current = 0;
+    smoothedEnergyRef.current = 0;
+    activeSourcesRef.current.clear();
 
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
@@ -208,12 +205,16 @@ export const useGeminiLive = () => {
 
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
+      // Inject welcome message instruction into system instruction to ensure it starts correctly
+      const baseInstruction = getSystemInstruction(voiceProfile.id);
+      const welcomeMsg = getWelcomeMessage(voiceProfile.name);
+      const fullInstruction = `${baseInstruction}\n\nIMPORTANT: Start the conversation immediately by saying exactly the following to the user: "${welcomeMsg}"`;
+
       const config = {
         model: MODEL_NAME,
         config: {
           responseModalities: [Modality.AUDIO],
-          // Use ID for system instruction to ensure correct prompt logic is selected
-          systemInstruction: getSystemInstruction(voiceProfile.id), 
+          systemInstruction: fullInstruction,
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceProfile.apiVoice } },
           },
@@ -228,11 +229,8 @@ export const useGeminiLive = () => {
           retryCountRef.current = 0; 
           canSendAudioRef.current = true;
           
-          // Use name (e.g., 'Anubis') for the welcome message string
-          sendTextToSession(getWelcomeMessage(voiceProfile.name));
-          promptLevelRef.current = 1; 
+          // Reset silence tracking
           silenceStartTimestampRef.current = Date.now();
-
           startSilenceMonitor(voiceProfile.name);
         },
         onmessage: async (message: LiveServerMessage) => {
@@ -247,7 +245,6 @@ export const useGeminiLive = () => {
           }
         },
         onclose: (e: CloseEvent) => {
-          console.log("Gemini Live Closed");
           if (!isIntentionalDisconnectRef.current) handleAutoReconnect();
           else setConnectionState(ConnectionState.DISCONNECTED);
         },
@@ -276,23 +273,28 @@ export const useGeminiLive = () => {
       silenceIntervalRef.current = window.setInterval(() => {
         if (userHasSpokenRef.current) return;
         
-        if (isPlayingRef.current) {
-            silenceStartTimestampRef.current = Date.now();
-            return;
+        // If audio is currently playing, reset silence timer
+        // We check if we are currently outputting audio by checking the schedule
+        const outputCtx = outputContextRef.current;
+        if (outputCtx && outputCtx.currentTime < nextStartTimeRef.current) {
+           silenceStartTimestampRef.current = Date.now();
+           return;
         }
 
         const silenceDuration = Date.now() - silenceStartTimestampRef.current;
         
-        if (promptLevelRef.current === 0 && silenceDuration > 2000) {
-             sendTextToSession(getWelcomeMessage(voiceName));
-             promptLevelRef.current = 1;
-             silenceStartTimestampRef.current = Date.now();
-        } else if (promptLevelRef.current === 1 && silenceDuration > 8000) {
-            sendTextToSession(PROMPT_8S);
+        // Note: promptLevel 0 (Welcome) is now handled by system instruction.
+        // We start checks at level 1.
+        
+        if (promptLevelRef.current <= 1 && silenceDuration > 10000) {
+            // First nudge
+            sendTextToSession(`System: The user has been silent. Please gently encourage them using this text: "${PROMPT_8S}"`);
             promptLevelRef.current = 2;
             silenceStartTimestampRef.current = Date.now();
-        } else if (promptLevelRef.current === 2 && silenceDuration > 12000) {
-            sendTextToSession(getPrompt12s(voiceName));
+        } else if (promptLevelRef.current === 2 && silenceDuration > 15000) {
+            // Second nudge
+            const prompt = getPrompt12s(voiceName);
+            sendTextToSession(`System: The user is still silent. Please say: "${prompt}"`);
             promptLevelRef.current = 3; 
         }
       }, 100); 
@@ -327,7 +329,8 @@ export const useGeminiLive = () => {
     source.connect(analyser);
     analyserRef.current = analyser;
 
-    const processor = ctx.createScriptProcessor(4096, 1, 1);
+    // Reduced buffer size from 4096 to 2048 to improve visualizer responsiveness and lower latency
+    const processor = ctx.createScriptProcessor(2048, 1, 1);
     processorRef.current = processor;
 
     lastAudioDetectedRef.current = Date.now();
@@ -338,17 +341,32 @@ export const useGeminiLive = () => {
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       analyser.getByteFrequencyData(dataArray);
       
+      // Calculate energy in voice frequency band (approx 100Hz - 3500Hz)
+      // Bin size = SampleRate(16000) / FFTSize(512) = 31.25 Hz
+      // Start Bin ~3 (93Hz) to Bin ~112 (3500Hz)
+      // This filters out low rumble and high hiss
       let speechEnergy = 0;
       let binCount = 0;
-      for (let i = 3; i < 96; i++) {
+      for (let i = 3; i < 112; i++) {
         speechEnergy += dataArray[i];
         binCount++;
       }
-      const avgEnergy = speechEnergy / binCount;
-      const instantVolume = Math.min(avgEnergy / 100, 1);
+      const currentAvgEnergy = speechEnergy / binCount;
+
+      // Apply low-pass smoothing filter to energy to reject transient noise/clicks
+      // smoothedEnergy = prev * (1 - alpha) + current * alpha
+      smoothedEnergyRef.current = 
+        (smoothedEnergyRef.current * (1 - ENERGY_SMOOTHING_FACTOR)) + 
+        (currentAvgEnergy * ENERGY_SMOOTHING_FACTOR);
+
+      const smoothedEnergy = smoothedEnergyRef.current;
+
+      // Visualizer volume derived from smoothed energy (scaled for visuals)
+      const instantVolume = Math.min(smoothedEnergy / 80, 1);
       setVolume(prev => prev * 0.7 + instantVolume * 0.3);
 
-      if (avgEnergy > SPEECH_ENERGY_THRESHOLD) {
+      // Robust voice activity detection with smoothed energy and dynamic threshold
+      if (smoothedEnergy > SPEECH_ENERGY_THRESHOLD) {
         lastAudioDetectedRef.current = Date.now();
         silenceStartTimestampRef.current = Date.now();
         userHasSpokenRef.current = true;
@@ -371,19 +389,20 @@ export const useGeminiLive = () => {
     if (!outputCtx) return;
 
     if (message.serverContent?.interrupted) {
-       audioQueueRef.current = [];
-       isPlayingRef.current = false;
-       
+       // Stop all active sources immediately
        const now = outputCtx.currentTime;
        activeSourcesRef.current.forEach(({ source, gain }) => {
         try {
             gain.gain.cancelScheduledValues(now);
             gain.gain.setValueAtTime(gain.gain.value, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.1); 
-            source.stop(now + 0.1);
+            gain.gain.linearRampToValueAtTime(0, now + 0.05); 
+            source.stop(now + 0.05);
         } catch(e) { /* ignore */ }
        });
        activeSourcesRef.current.clear();
+       
+       // Reset scheduling cursor
+       nextStartTimeRef.current = now;
        silenceStartTimestampRef.current = Date.now();
        return;
     }
@@ -394,11 +413,45 @@ export const useGeminiLive = () => {
         const audioBytes = base64Decode(audioData);
         const audioBuffer = await pcmToAudioBuffer(audioBytes, outputCtx, 24000);
         
-        audioQueueRef.current.push(audioBuffer);
+        // --- Scheduler Logic ---
         
-        if (!isPlayingRef.current) {
-            playNextInBuffer(outputCtx);
+        // Ensure we don't schedule in the past if there was a buffer underrun
+        const currentTime = outputCtx.currentTime;
+        if (nextStartTimeRef.current < currentTime) {
+            nextStartTimeRef.current = currentTime;
         }
+        
+        const source = outputCtx.createBufferSource();
+        source.buffer = audioBuffer;
+        
+        const voiceProfile = getEffectiveVoiceProfile(audioSettingsRef.current?.voiceName);
+        let playbackRate = 1.0;
+        
+        if (voiceProfile.pitchShift !== 0) {
+            source.detune.value = voiceProfile.pitchShift * 100;
+            // Calculate playback rate change: 2^(cents/1200)
+            playbackRate = Math.pow(2, (voiceProfile.pitchShift * 100) / 1200);
+        }
+
+        const gainNode = outputCtx.createGain();
+        gainNode.connect(outputCtx.destination);
+        if (recordingDestRef.current) {
+            gainNode.connect(recordingDestRef.current);
+        }
+        source.connect(gainNode);
+
+        source.start(nextStartTimeRef.current);
+        
+        // Advance cursor by the *actual* duration of this chunk
+        const actualDuration = audioBuffer.duration / playbackRate;
+        nextStartTimeRef.current += actualDuration;
+        
+        const activeItem = { source, gain: gainNode };
+        activeSourcesRef.current.add(activeItem);
+
+        source.onended = () => {
+            activeSourcesRef.current.delete(activeItem);
+        };
     }
 
     const serverContent = message.serverContent;
@@ -411,43 +464,6 @@ export const useGeminiLive = () => {
              userHasSpokenRef.current = true;
         }
     }
-  };
-
-  const playNextInBuffer = (ctx: AudioContext) => {
-      if (audioQueueRef.current.length === 0) {
-          isPlayingRef.current = false;
-          silenceStartTimestampRef.current = Date.now();
-          return;
-      }
-
-      isPlayingRef.current = true;
-      const buffer = audioQueueRef.current.shift();
-      if (!buffer) return;
-
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      
-      const voiceProfile = getEffectiveVoiceProfile(audioSettingsRef.current?.voiceName);
-      if (voiceProfile.pitchShift !== 0) {
-          source.detune.value = voiceProfile.pitchShift * 100;
-      }
-
-      const gainNode = ctx.createGain();
-      gainNode.connect(ctx.destination);
-      if (recordingDestRef.current) {
-          gainNode.connect(recordingDestRef.current);
-      }
-      source.connect(gainNode);
-
-      source.start();
-      
-      const activeItem = { source, gain: gainNode };
-      activeSourcesRef.current.add(activeItem);
-
-      source.onended = () => {
-          activeSourcesRef.current.delete(activeItem);
-          playNextInBuffer(ctx);
-      };
   };
 
   const updateTranscript = (role: 'user' | 'model', text: string, isComplete: boolean) => {

@@ -109,7 +109,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ children, index }) => {
       {/* Text Overlay */}
       <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 sm:p-5 pointer-events-none">
         <div className="transform transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-105 origin-bottom-left">
-           <p className="text-sm sm:text-base font-bold text-white leading-snug tracking-tight drop-shadow-lg shadow-black/80">
+           <p className="text-sm sm:text-base font-bold text-white leading-snug tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
             {children}
            </p>
            {/* Decorative line */}

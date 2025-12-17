@@ -34,6 +34,8 @@ async function hashPassword(password: string): Promise<string> {
 
 export const userService = {
   async register(username: string, password: string): Promise<User | null> {
+    if (!username || !password) throw new Error('Username and password are required');
+    
     const usersStr = localStorage.getItem(STORAGE_KEY_USERS);
     const users: User[] = usersStr ? JSON.parse(usersStr) : [];
     
@@ -71,7 +73,27 @@ export const userService = {
 
   getCurrentUser(): User | null {
     const userStr = localStorage.getItem(STORAGE_KEY_CURRENT_USER);
-    return userStr ? JSON.parse(userStr) : null;
+    if (!userStr) return null;
+    
+    try {
+      const currentUser = JSON.parse(userStr);
+      
+      // Integrity check: Ensure user still exists in DB
+      const usersStr = localStorage.getItem(STORAGE_KEY_USERS);
+      const users: User[] = usersStr ? JSON.parse(usersStr) : [];
+      
+      const isValid = users.some(u => u.username === currentUser.username && u.passwordHash === currentUser.passwordHash);
+      
+      if (!isValid) {
+          this.logout();
+          return null;
+      }
+      
+      return currentUser;
+    } catch (e) {
+      this.logout();
+      return null;
+    }
   },
 
   // --- Session Management ---

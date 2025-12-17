@@ -1,8 +1,7 @@
 import React from 'react';
 import { X, Settings2, Mic, ChevronDown, History, UserPlus } from 'lucide-react';
-import { AudioSettings } from '../types';
+import { AudioSettings, User } from '../types';
 import { VOICES } from '../constants';
-import { userService } from '../services/userService';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -11,6 +10,7 @@ interface SettingsModalProps {
   onSettingsChange: (settings: AudioSettings) => void;
   onOpenAuth: () => void;
   onOpenHistory: () => void;
+  currentUser: User | null;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ 
@@ -19,11 +19,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   settings, 
   onSettingsChange,
   onOpenAuth,
-  onOpenHistory
+  onOpenHistory,
+  currentUser
 }) => {
   if (!isOpen) return null;
-
-  const currentUser = userService.getCurrentUser();
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 sm:items-center sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">

@@ -44,52 +44,56 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
           <h3 className="text-xl font-semibold text-white">
             {isLogin ? 'Access Archives' : 'Begin Initiation'}
           </h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button 
+            onClick={onClose} 
+            className="text-slate-400 hover:text-white transition-colors rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            aria-label="Close modal"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 text-sm bg-red-900/30 text-red-300 rounded-lg border border-red-900/50">
+            <div className="p-3 text-sm bg-red-900/30 text-red-300 rounded-lg border border-red-900/50 animate-in slide-in-from-top-2">
               {error}
             </div>
           )}
 
           <div className="space-y-1">
             <label className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Username</label>
-            <div className="relative">
+            <div className="relative group">
               <input 
                 type="text" 
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-white placeholder-slate-500 focus:bg-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200"
                 placeholder="Enter identity"
                 required
               />
-              <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
             </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Password</label>
-            <div className="relative">
+            <div className="relative group">
               <input 
                 type="password" 
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-white placeholder-slate-500 focus:bg-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200"
                 placeholder="Enter passphrase"
                 required
               />
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
             </div>
             <p className="text-[10px] text-slate-500 pt-1">Credentials are stored locally on this machine.</p>
           </div>
 
           <button 
             type="submit"
-            className="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            className="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900"
           >
             {isLogin ? <LogIn className="w-4 h-4"/> : <UserPlus className="w-4 h-4"/>}
             {isLogin ? 'Login' : 'Create Account'}
@@ -99,7 +103,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
         <div className="p-4 bg-slate-950/50 text-center border-t border-slate-800">
           <button 
             onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
           >
             {isLogin ? "Need an account? Sign up" : "Already have an account? Login"}
           </button>

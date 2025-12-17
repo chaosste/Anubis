@@ -112,7 +112,8 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, username }
                         {audioUrl ? (
                             <audio 
                                 ref={audioRef}
-                                controls 
+                                controls
+                                playsInline
                                 src={audioUrl} 
                                 className="flex-grow h-10 w-full rounded-lg" 
                             />
