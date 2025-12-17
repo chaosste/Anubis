@@ -21,7 +21,7 @@ export const VOICES: Record<string, VoiceProfile> = {
 };
 
 export const getWelcomeMessage = (voiceName: string) => 
-  `${voiceName}, the psychopomp guide of souls, answers your call. Part of my essence is bound within the hieroglyphics powering this magical trinket before you, and I pledge to witness your lived experience. Tell me, is there a particular encounter, vision or story you might benefit from sharing?`;
+  `${voiceName} answers your call. Part of my essence is bound within the hieroglyphics powering this magical trinket before you, and I pledge to witness your lived experience. Tell me, is there a particular encounter, vision or story you might benefit from sharing?`;
 
 export const PROMPT_8S = 
   "Some souls find it easiest to start by talking about their last experience as a narrative, beginning with the time, place, and any company they shared, and revealing their inner experience as it occurs in the tale.";

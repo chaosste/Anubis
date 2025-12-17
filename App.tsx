@@ -110,6 +110,25 @@ export const App: React.FC = () => {
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
+  // Touch handlers for swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    const x = e.touches[0].pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; 
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   const INTRO_CARDS = [
     {
       id: 1,
@@ -269,6 +288,9 @@ export const App: React.FC = () => {
                onMouseLeave={handleMouseLeave}
                onMouseUp={handleMouseUp}
                onMouseMove={handleMouseMove}
+               onTouchStart={handleTouchStart}
+               onTouchMove={handleTouchMove}
+               onTouchEnd={handleTouchEnd}
                style={{ scrollSnapType: isDragging ? 'none' : 'x mandatory' }}
                className={`w-full overflow-x-auto pb-6 pt-2 px-4 flex gap-4 snap-x snap-mandatory no-scrollbar transition-all ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
              >

@@ -207,6 +207,12 @@ export const useGeminiLive = () => {
           setConnectionState(ConnectionState.CONNECTED);
           retryCountRef.current = 0; 
           canSendAudioRef.current = true;
+          
+          // Trigger welcome message immediately upon connection
+          sendTextToSession(getWelcomeMessage(settings.voiceName));
+          promptLevelRef.current = 1; // Advance prompt level so silence monitor doesn't repeat it
+          silenceStartTimestampRef.current = Date.now();
+
           startSilenceMonitor(settings.voiceName);
         },
         onmessage: async (message: LiveServerMessage) => {
@@ -258,10 +264,12 @@ export const useGeminiLive = () => {
 
         const silenceDuration = Date.now() - silenceStartTimestampRef.current;
         
+        // Prompt level 0 is now handled immediately in onopen, so we skip to level 1 logic
         if (promptLevelRef.current === 0 && silenceDuration > 2000) {
-            sendTextToSession(getWelcomeMessage(voiceName));
-            promptLevelRef.current = 1;
-            silenceStartTimestampRef.current = Date.now();
+             // Fallback if onopen didn't fire for some reason, though logic dictates it should have
+             sendTextToSession(getWelcomeMessage(voiceName));
+             promptLevelRef.current = 1;
+             silenceStartTimestampRef.current = Date.now();
         } else if (promptLevelRef.current === 1 && silenceDuration > 8000) {
             sendTextToSession(PROMPT_8S);
             promptLevelRef.current = 2;
