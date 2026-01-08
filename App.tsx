@@ -14,31 +14,32 @@ import { ConnectionState, AudioSettings, User } from './types';
 import { LogIn, LogOut, MoreVertical } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const { 
-    connect, 
-    disconnect, 
+  const {
+    connect,
+    disconnect,
     saveCurrentSession,
-    connectionState, 
-    volume, 
-    transcripts, 
+    connectionState,
+    volume,
+    transcripts,
     error,
-    recordedBlob 
+    recordedBlob
   } = useGeminiLive();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  
+
   // Lazy initialization ensures we read from localStorage immediately on first render
   // effectively persisting the login state across refreshes.
   const [currentUser, setCurrentUser] = useState<User | null>(() => userService.getCurrentUser());
-  
+
   const [audioSettings, setAudioSettings] = useState<AudioSettings>({
     voiceName: 'Anubis',
   });
-  
+
   const [hasDismissedLoginPrompt, setHasDismissedLoginPrompt] = useState(false);
   const [showSaveOptions, setShowSaveOptions] = useState(false);
+  const [showTranscript, setShowTranscript] = useState(true);
 
   const handleLoginSuccess = (user: User) => {
     setCurrentUser(user);
@@ -52,15 +53,15 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (connectionState === ConnectionState.DISCONNECTED) {
-       if (transcripts.length > 0 || recordedBlob) {
-           if (currentUser) {
-               saveCurrentSession(currentUser.username)
-                 .then(() => setShowSaveOptions(true))
-                 .catch(console.error);
-           } else {
-               setShowSaveOptions(true);
-           }
-       }
+      if (transcripts.length > 0 || recordedBlob) {
+        if (currentUser) {
+          saveCurrentSession(currentUser.username)
+            .then(() => setShowSaveOptions(true))
+            .catch(console.error);
+        } else {
+          setShowSaveOptions(true);
+        }
+      }
     } else if (connectionState === ConnectionState.CONNECTING) {
       setShowSaveOptions(false);
     }
@@ -75,141 +76,156 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-slate-200 font-sans font-light selection:bg-indigo-500/30">
-      
+
       {/* Header */}
       <header className="bg-black/80 border-b border-slate-800 sticky top-0 z-20 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4 pl-2">
             <div className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-500 hover:text-indigo-400 transition-colors duration-500">
-               <AnkhIcon className="w-full h-full" />
+              <AnkhIcon className="w-full h-full" />
             </div>
 
             {/* Status Section */}
             <div className="flex items-center gap-2">
-               {/* Voice Pill */}
-               <div className="text-[10px] font-mono text-slate-400/80 bg-slate-900/50 px-2 py-1 rounded-full border border-slate-800 flex items-center gap-1.5">
-                  <span className="text-indigo-500/70 hidden sm:inline">VOICE</span>
-                  <span className="text-slate-300">{audioSettings.voiceName}</span>
-               </div>
+              {/* Voice Pill */}
+              <div className="text-[10px] font-mono text-slate-400/80 bg-slate-900/50 px-2 py-1 rounded-full border border-slate-800 flex items-center gap-1.5">
+                <span className="text-indigo-500/70 hidden sm:inline">VOICE</span>
+                <span className="text-slate-300">{audioSettings.voiceName}</span>
+              </div>
 
-               {/* Username Pill */}
-               {currentUser && (
-                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 animate-in fade-in slide-in-from-left-2">
-                    <span className="text-white">{currentUser.username}</span>
-                 </div>
-               )}
+              {/* Username Pill */}
+              {currentUser && (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 animate-in fade-in slide-in-from-left-2">
+                  <span className="text-white">{currentUser.username}</span>
+                </div>
+              )}
 
-               {/* Status Pill */}
-               <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-medium border transition-colors duration-200 ${
-                  connectionState === ConnectionState.CONNECTED 
-                    ? 'bg-green-950/30 text-green-300 border-green-900/50'
-                    : connectionState === ConnectionState.CONNECTING
+              {/* Status Pill */}
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-medium border transition-colors duration-200 ${connectionState === ConnectionState.CONNECTED
+                  ? 'bg-green-950/30 text-green-300 border-green-900/50'
+                  : connectionState === ConnectionState.CONNECTING
                     ? 'bg-yellow-950/30 text-yellow-300 border-yellow-900/50'
                     : 'bg-slate-900/50 text-slate-500 border-slate-800'
-               }`}>
-                  <div className={`w-1.5 h-1.5 rounded-full ${
-                      connectionState === ConnectionState.CONNECTED ? 'bg-green-400 animate-pulse' :
-                      connectionState === ConnectionState.CONNECTING ? 'bg-yellow-400 animate-pulse' :
+                }`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${connectionState === ConnectionState.CONNECTED ? 'bg-green-400 animate-pulse' :
+                    connectionState === ConnectionState.CONNECTING ? 'bg-yellow-400 animate-pulse' :
                       'bg-slate-600'
                   }`} />
-                  <span>{connectionState === ConnectionState.DISCONNECTED ? 'OFFLINE' : connectionState}</span>
-               </div>
+                <span>{connectionState === ConnectionState.DISCONNECTED ? 'OFFLINE' : connectionState}</span>
+              </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 sm:gap-4">
-             {currentUser ? (
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={handleLogout}
-                    className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition-colors"
-                    title="Logout"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </button>
-                </div>
-             ) : (
-                <button 
-                  onClick={() => setIsAuthOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-full transition-colors"
+            {currentUser ? (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition-colors"
+                  title="Logout"
                 >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Login</span>
+                  <LogOut className="w-5 h-5" />
                 </button>
-             )}
-             
-             <button 
-               onClick={() => setIsSettingsOpen(true)}
-               disabled={connectionState === ConnectionState.CONNECTED || connectionState === ConnectionState.CONNECTING}
-               className={`p-2 rounded-full transition-colors ${
-                 connectionState === ConnectionState.DISCONNECTED 
-                  ? 'text-slate-400 hover:bg-slate-800 hover:text-white' 
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-full transition-colors"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Login</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              disabled={connectionState === ConnectionState.CONNECTED || connectionState === ConnectionState.CONNECTING}
+              className={`p-2 rounded-full transition-colors ${connectionState === ConnectionState.DISCONNECTED
+                  ? 'text-slate-400 hover:bg-slate-800 hover:text-white'
                   : 'text-slate-600 cursor-not-allowed'
-               }`}
-               title="Audio Settings"
-             >
-               <MoreVertical className="w-5 h-5 sm:w-6 sm:h-6" />
-             </button>
+                }`}
+              title="Audio Settings"
+            >
+              <MoreVertical className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+
+            <button
+              onClick={() => setShowTranscript(prev => !prev)}
+              className={`p-2 rounded-full transition-all duration-500 ${showTranscript
+                  ? 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.2)]'
+                  : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800 border border-transparent'
+                }`}
+              title={showTranscript ? "Enter Mystic Mode (Hide Transcript)" : "Exit Mystic Mode (Show Transcript)"}
+            >
+              <div className={`relative ${showTranscript ? 'animate-pulse' : ''}`}>
+                <div className={`w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center transition-transform duration-700 ${showTranscript ? 'rotate-180' : 'rotate-0'}`}>
+                  {showTranscript ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88 2 12s3-7 10-7a9 9 0 0 1 5.12 1.62" /><path d="M2 2 22 22" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><path d="M13 19c5 0 8-7 8-7a13.16 13.16 0 0 0-1.67-2.68" /><circle cx="12" cy="12" r="3" /><path d="m3 3 18 18" /></svg>
+                  )}
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-0 sm:px-4 pt-4 pb-6 sm:py-12 flex flex-col items-center w-full">
-        
+
         {/* Intro Gallery */}
         {connectionState === ConnectionState.DISCONNECTED && transcripts.length === 0 && (
-            <IntroGallery onLoginClick={() => setIsAuthOpen(true)} />
+          <IntroGallery onLoginClick={() => setIsAuthOpen(true)} />
         )}
 
         {/* Core Interface */}
-        <div className="w-full max-w-4xl px-3 sm:px-0">
+        <div className={`w-full max-w-4xl px-3 sm:px-0 transition-all duration-1000 ease-in-out ${!showTranscript ? 'sm:scale-110 sm:pt-8' : ''}`}>
           <div className="w-full bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/50 border border-slate-800 overflow-hidden relative isolate transition-all">
-            
+
             <div className="relative z-10 p-4 sm:p-8">
               {/* Visualizer Area */}
               <div className="mb-6 sm:mb-8 relative">
-                  <Visualizer 
-                    volume={volume} 
-                    isActive={connectionState === ConnectionState.CONNECTED}
-                    voiceName={audioSettings.voiceName}
-                  />
-                  
-                  {/* Save Session Overlay */}
-                  {showSaveOptions && (
-                      <SaveSessionOverlay 
-                        currentUser={currentUser}
-                        transcripts={transcripts}
-                        recordedBlob={recordedBlob}
-                        onClose={() => setShowSaveOptions(false)}
-                        onLoginClick={() => setIsAuthOpen(true)}
-                        onDismissLogin={() => {
-                            setShowSaveOptions(false);
-                            setHasDismissedLoginPrompt(true);
-                        }}
-                        hasDismissedLogin={hasDismissedLoginPrompt}
-                      />
-                  )}
+                <Visualizer
+                  volume={volume}
+                  isActive={connectionState === ConnectionState.CONNECTED}
+                  voiceName={audioSettings.voiceName}
+                />
 
-                  {/* Status Badge */}
-                  <div className="absolute top-0 right-0 flex flex-col items-end sm:flex-row sm:items-center gap-2">
-                      <span className="text-[10px] sm:text-xs font-mono text-slate-400/80 backdrop-blur-sm bg-black/20 px-2 py-0.5 rounded-full border border-white/10">
-                        16kHz / 16-bit
-                      </span>
-                      <span className={`inline-flex items-center px-2 py-0.5 sm:px-2.5 rounded-full text-[10px] sm:text-xs font-medium transition-colors duration-200 backdrop-blur-sm ${
-                        connectionState === ConnectionState.CONNECTED 
-                          ? 'bg-green-900/40 text-green-300 border border-green-700/50'
-                          : connectionState === ConnectionState.CONNECTING
-                          ? 'bg-yellow-900/40 text-yellow-300 border border-yellow-700/50'
-                          : 'bg-slate-800/40 text-slate-300 border border-slate-700/50'
-                      }`}>
-                        {connectionState === ConnectionState.CONNECTED && <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 mr-1.5 bg-green-400 rounded-full animate-pulse"></span>}
-                        {connectionState}
-                      </span>
-                  </div>
+                {/* Save Session Overlay */}
+                {showSaveOptions && (
+                  <SaveSessionOverlay
+                    currentUser={currentUser}
+                    transcripts={transcripts}
+                    recordedBlob={recordedBlob}
+                    onClose={() => setShowSaveOptions(false)}
+                    onLoginClick={() => setIsAuthOpen(true)}
+                    onDismissLogin={() => {
+                      setShowSaveOptions(false);
+                      setHasDismissedLoginPrompt(true);
+                    }}
+                    hasDismissedLogin={hasDismissedLoginPrompt}
+                  />
+                )}
+
+                {/* Status Badge */}
+                <div className="absolute top-0 right-0 flex flex-col items-end sm:flex-row sm:items-center gap-2">
+                  <span className="text-[10px] sm:text-xs font-mono text-slate-400/80 backdrop-blur-sm bg-black/20 px-2 py-0.5 rounded-full border border-white/10">
+                    16kHz / 16-bit
+                  </span>
+                  <span className={`inline-flex items-center px-2 py-0.5 sm:px-2.5 rounded-full text-[10px] sm:text-xs font-medium transition-colors duration-200 backdrop-blur-sm ${connectionState === ConnectionState.CONNECTED
+                      ? 'bg-green-900/40 text-green-300 border border-green-700/50'
+                      : connectionState === ConnectionState.CONNECTING
+                        ? 'bg-yellow-900/40 text-yellow-300 border border-yellow-700/50'
+                        : 'bg-slate-800/40 text-slate-300 border border-slate-700/50'
+                    }`}>
+                    {connectionState === ConnectionState.CONNECTED && <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 mr-1.5 bg-green-400 rounded-full animate-pulse"></span>}
+                    {connectionState}
+                  </span>
+                </div>
               </div>
 
               {/* Controls */}
-              <Controls 
+              <Controls
                 connectionState={connectionState}
                 onConnect={handleConnect}
                 onDisconnect={disconnect}
@@ -224,12 +240,12 @@ export const App: React.FC = () => {
         <div className="h-4 sm:h-16 w-full"></div>
 
         {/* Live Transcript */}
-        <div className="w-full max-w-4xl px-3 sm:px-0 animate-in fade-in duration-1000">
-           <div className="flex items-center gap-2 mb-2 px-2">
-             <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Session Transcript</span>
-             <div className="h-px bg-slate-800 flex-grow"></div>
-           </div>
-           <Transcript items={transcripts} />
+        <div className={`w-full max-w-4xl px-3 sm:px-0 transition-all duration-700 overflow-hidden ${showTranscript ? 'opacity-100 mt-0 max-h-[1000px]' : 'opacity-0 mt-[-20px] max-h-0 pointer-events-none'}`}>
+          <div className="flex items-center gap-2 mb-2 px-2">
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">Session Transcript</span>
+            <div className="h-px bg-slate-800 flex-grow"></div>
+          </div>
+          <Transcript items={transcripts} />
         </div>
 
       </main>
@@ -237,9 +253,9 @@ export const App: React.FC = () => {
       {/* Footer */}
       <footer className="py-6 sm:py-8 text-center text-slate-600 text-xs sm:text-sm flex flex-col items-center gap-2">
         <p>Powered by Gemini Live API</p>
-        <a 
-          href="https://newpsychonaut.com" 
-          target="_blank" 
+        <a
+          href="https://newpsychonaut.com"
+          target="_blank"
           rel="noopener noreferrer"
           className="text-indigo-500 hover:text-indigo-400 transition-colors"
         >
@@ -248,7 +264,7 @@ export const App: React.FC = () => {
       </footer>
 
       {/* Settings Modal */}
-      <SettingsModal 
+      <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         settings={audioSettings}
@@ -259,7 +275,7 @@ export const App: React.FC = () => {
       />
 
       {/* Auth Modal */}
-      <AuthModal 
+      <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
         onLoginSuccess={handleLoginSuccess}
@@ -267,10 +283,10 @@ export const App: React.FC = () => {
 
       {/* History Modal */}
       {currentUser && (
-        <HistoryModal 
-            isOpen={isHistoryOpen}
-            onClose={() => setIsHistoryOpen(false)}
-            username={currentUser.username}
+        <HistoryModal
+          isOpen={isHistoryOpen}
+          onClose={() => setIsHistoryOpen(false)}
+          username={currentUser.username}
         />
       )}
     </div>

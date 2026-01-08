@@ -38,46 +38,73 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive, voiceName }) 
 
       if (!isActive) {
         // Draw idle state (Subtle, calming "breathing" effect)
-        // Slower cycle (dividing by 2500ms) for a relaxed pace
         const time = Date.now() / 2500;
-        const breathe = 4 * Math.sin(time); // Gentle radius variance (+/- 4px)
-        const opacity = 0.1 + 0.08 * Math.sin(time); // Soft opacity pulse (0.02 to 0.18)
+        const breathe = 4 * Math.sin(time);
+        const opacity = 0.1 + 0.05 * Math.sin(time);
+
+        // Glow
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, baseRadius + 40);
+        gradient.addColorStop(0, `rgba(99, 102, 241, ${opacity})`);
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, baseRadius + 40, 0, 2 * Math.PI);
+        ctx.fillStyle = gradient;
+        ctx.fill();
 
         ctx.beginPath();
         ctx.arc(centerX, centerY, baseRadius + breathe, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(99, 102, 241, ${opacity})`; // Indigo 500 with variable low opacity
+        ctx.fillStyle = `rgba(99, 102, 241, ${opacity + 0.05})`;
         ctx.fill();
-        
-        // Very subtle ring
-        ctx.strokeStyle = `rgba(99, 102, 241, ${opacity + 0.1})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
 
       } else {
         // Active State (Dynamic Audio Reactive)
-        
+        const time = Date.now() / 1000;
+
         // Smooth interpolation for the radius
-        const targetRadius = baseRadius + (volumeRef.current * 300); 
-        currentRadiusRef.current += (targetRadius - currentRadiusRef.current) * 0.1;
+        const volumeEffect = volumeRef.current;
+        const targetRadius = baseRadius + (volumeEffect * 180);
+        currentRadiusRef.current += (targetRadius - currentRadiusRef.current) * 0.15;
 
-        // Inner Core
+        const dynamicRadius = currentRadiusRef.current;
+
+        // Outer Glow (Aura)
+        const auraGradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, dynamicRadius + 60);
+        auraGradient.addColorStop(0, `rgba(99, 102, 241, ${0.2 + volumeEffect * 0.3})`);
+        auraGradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
         ctx.beginPath();
-        ctx.arc(centerX, centerY, baseRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = '#6366f1'; // Indigo 500
+        ctx.arc(centerX, centerY, dynamicRadius + 60, 0, 2 * Math.PI);
+        ctx.fillStyle = auraGradient;
         ctx.fill();
 
-        // Dynamic Outer Ring
+        // Main Reactive Pulse
         ctx.beginPath();
-        ctx.arc(centerX, centerY, Math.min(currentRadiusRef.current, maxRadius), 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+        ctx.arc(centerX, centerY, dynamicRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(99, 102, 241, ${0.3 + volumeEffect * 0.4})`;
         ctx.fill();
-        
-        // Second Outer Ring
+
+        // Core
         ctx.beginPath();
-        ctx.arc(centerX, centerY, Math.min(currentRadiusRef.current * 0.7 + 30, maxRadius), 0, 2 * Math.PI);
-        ctx.strokeStyle = 'rgba(165, 180, 252, 0.5)'; // Indigo 300
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        ctx.arc(centerX, centerY, baseRadius + (volumeEffect * 10), 0, 2 * Math.PI);
+        ctx.fillStyle = '#818cf8'; // Indigo 400
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = '#6366f1';
+        ctx.fill();
+        ctx.shadowBlur = 0; // Reset
+
+        // Floating Orbs (Organic presence)
+        for (let i = 0; i < 3; i++) {
+          const angle = time + (i * Math.PI * 2 / 3);
+          const orbitRadius = baseRadius + 20 + (volumeEffect * 40);
+          const x = centerX + Math.cos(angle) * orbitRadius;
+          const y = centerY + Math.sin(angle) * orbitRadius;
+
+          ctx.beginPath();
+          ctx.arc(x, y, 4 + (volumeEffect * 6), 0, 2 * Math.PI);
+          ctx.fillStyle = 'rgba(165, 180, 252, 0.6)';
+          ctx.fill();
+        }
       }
 
       animationRef.current = requestAnimationFrame(render);
@@ -91,13 +118,13 @@ const Visualizer: React.FC<VisualizerProps> = ({ volume, isActive, voiceName }) 
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isActive]); 
+  }, [isActive]);
 
   return (
     <div className="relative w-full h-48 sm:h-64 flex items-center justify-center">
-      <canvas 
-        ref={canvasRef} 
-        width={400} 
+      <canvas
+        ref={canvasRef}
+        width={400}
         height={300}
         className="w-full h-full object-contain"
       />
