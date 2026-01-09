@@ -203,7 +203,7 @@ export const useGeminiLive = () => {
 
       recorder.start();
 
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: userApiKey }); // passed in from UI;
       
       // Inject welcome message instruction into system instruction to ensure it starts correctly
       const baseInstruction = getSystemInstruction(voiceProfile.id);
