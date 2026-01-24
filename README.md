@@ -6,15 +6,24 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1ivoYA-zyX4EKyRdqaS67St7jI50LS-6d
+View your app in AI Studio: <https://ai.studio/apps/drive/1ivoYA-zyX4EKyRdqaS67St7jI50LS-6d>
 
 ## Run Locally
 
 **Prerequisites:**  Node.js
-
 
 1. Install dependencies:
    `npm install`
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## 3-Layer Architecture
+
+This project uses a 3-layer architecture for AI-assisted development:
+
+- **Directives** (`directives/`): SOPs defining what to do
+- **Execution** (`execution/`): Deterministic Python scripts doing the work
+- **Orchestration**: AI decision-making and routing
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the complete guide.
