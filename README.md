@@ -51,54 +51,55 @@ Under the hood, a **self-annealing directive system** learns from its own errors
 ## Screenshots
 
 <p align="center">
-  <img src="Images/a2.jpg" width="280" alt="Anubis Screenshot" />
-  <img src="Images/a3.jpg" width="280" alt="Anubis Screenshot" />
-  <img src="Images/a4.jpg" width="280" alt="Anubis Screenshot" />
+  <img src="Images/a2.jpg" width="280" alt="Anubis character selection screen" />
+  <img src="Images/a3.jpg" width="280" alt="Anubis live interview session" />
+  <img src="Images/a4.jpg" width="280" alt="Anubis interview transcript view" />
 </p>
 <p align="center">
-  <img src="Images/a5.jpg" width="280" alt="Anubis Screenshot" />
+  <img src="Images/a5.jpg" width="280" alt="Anubis session summary" />
 </p>
+
+<!-- Add a demo GIF when available:
+<p align="center">
+  <img src="Images/demo.gif" width="600" alt="Anubis demo — live voice interview" />
+</p>
+-->
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React + TypeScript, Vite |
+| Frontend | React 19 + TypeScript, Vite |
 | AI | Google Gemini Live API |
-| Deployment | Google Cloud |
+| Deployment | Google Cloud (Docker) |
 | Auth | Built-in authentication system |
 
 ## Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/chaosste/Anubis.git
 cd Anubis
-
-# Install dependencies
 npm install
-
-# Configure your Gemini API key
-# (see .env.example or environment configuration)
-
-# Run development server
 npm run dev
 ```
 
-## ⚠️ Important Disclaimer
+You'll need a Gemini API key — see `.env.example` or environment configuration.
 
-> **Anubis is NOT a therapist, counsellor, or mental health professional.** It is a research and documentation tool for exploring subjective experience through structured interview techniques.
+## ⚠️ Disclaimer
 
-- This application does **not** provide medical, psychological, or therapeutic advice
-- It is **not** a substitute for professional mental health support
-- Anubis is designed for **experience reports and integration**, not crisis intervention
-- If you are in crisis, please contact your local emergency services or a crisis helpline
+> **Anubis is NOT a therapist, counsellor, or mental health professional.** It is a research and documentation tool for exploring subjective experience through structured voice interviews.
+
+- Not a substitute for professional mental health support
+- Designed for experience reports and integration, not crisis intervention
+- If you are in crisis, contact your local emergency services or a crisis helpline
 - The developers assume no responsibility for how this tool is used
 - Use of psychedelic substances may be illegal in your jurisdiction
 
 ## Related Projects
 
-> 💡 **Like Anubis?** Check out [MicroPhenom AI](https://github.com/chaosste/MicroPhenom-AI-1) — the vanilla edition for granular reports on wider lived experience. Or try [NeuroPhenom AI](https://github.com/chaosste/NeuroPhenom-AI) — the high-fidelity clinical interface for mapping pre-reflective subjective experience.
+- **[MicroPhenom AI](https://github.com/chaosste/MicroPhenom-AI-1)** — The vanilla edition for granular reports on wider lived experience
+- **[NeuroPhenom AI](https://github.com/chaosste/NeuroPhenom-AI)** — High-fidelity clinical interface for mapping pre-reflective subjective experience
+- **[Facilitator-AI](https://github.com/chaosste/Facilitator-AI)** — AI-assisted facilitation tools
 
 ---
 
