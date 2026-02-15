@@ -4,9 +4,9 @@
 
 **Voice-Driven Neurophenomenology for Psychedelic Experience**
 
-*Granular trip report interviews through real-time AI voice interaction*
+*Real-time AI voice interviews that probe the fine structure of subjective psychedelic experience*
 
-<img src="Images/a1.jpg" width="600" alt="Anubis Interface" />
+<img src="Images/a1.jpg" width="600" alt="Anubis — voice interview interface with deity-themed character selection" />
 
 [![Live on Google Cloud](https://img.shields.io/badge/Live-Google%20Cloud-4285F4?style=flat-square&logo=google-cloud)](https://cloud.google.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
