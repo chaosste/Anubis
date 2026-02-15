@@ -107,8 +107,6 @@ You'll need a Gemini API key — see `.env.example` or environment configuration
 
 **Built by [Steve Beale](https://newpsychonaut.com)**
 
-[newpsychonaut.com](https://newpsychonaut.com)
-
-© 2026 Stephen Beale. MIT License.
+© 2026 Stephen Beale · MIT License
 
 </div>
