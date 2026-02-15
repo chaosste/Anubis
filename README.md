@@ -15,23 +15,26 @@
 
 ---
 
+## Why Anubis?
+
+Trip reports are usually written after the fact — flattened by memory, shaped by narrative. Anubis takes a different approach: real-time voice dialogue that catches the granular phenomenological detail while it's still fresh. The result is richer, more structurally faithful documentation of psychedelic experience.
+
+The interview methodology draws on the micro-phenomenological tradition and the integration therapy approach championed by practitioners like Marc Aixalà at [ICEERS](https://www.iceers.org/). Anubis covers **vision reports and experience integration** — not crisis intervention.
+
 ## About
 
-Anubis is a voice-driven neurophenomenology application for conducting granular psychedelic trip report interviews. Using Google's Gemini Live API, it engages users in real-time spoken dialogue to explore and document the micro-dynamics of psychedelic experience with unprecedented detail.
+Anubis uses Google's Gemini Live API to conduct fluid, spoken interviews exploring the micro-dynamics of psychedelic experience. Its voices are based on ancient deities — somewhere between the sacred and the absurd. Some call it kitsch. Others say the theatrical atmosphere opens up conversation in unexpected ways.
 
-Anubis' voices are based on ancient deities — so it's pretty kitsch right now. Others say they like Anubis' imaginary aspects. The theatrical character voices create a unique interview atmosphere that sits somewhere between the sacred and the absurd.
-
-Anubis covers **vision reports and experience integration**, not crisis intervention. It draws on the kind of granular phenomenological approach championed by practitioners like Marc Aixalà at [ICEERS](https://www.iceers.org/) in the field of integration therapy.
+Under the hood, a **self-annealing directive system** learns from its own errors and continuously refines its conversational approach.
 
 ## Features
 
-- 🎙️ **Real-Time Voice Interaction** — Gemini Live API for fluid, natural conversation
-- 🔄 **Self-Annealing Directive System** — Learns from errors and refines its approach over time
-- 🏗️ **3-Layer Architecture** — Directives / Orchestration / Execution for robust interview management
-- 🔒 **Privacy-First Design** — No data persistence by default; local save optional with auth
-- 🎭 **Deity-Themed Voices** — Ancient character voices for a theatrical interview experience
-- 🔐 **Auth System** — Optional authentication for local conversation recording
-- 🔬 **Granular Phenomenology** — Probes the fine structure of subjective psychedelic experience
+- 🎙️ **Real-Time Voice Interaction** — Gemini Live API for natural, flowing dialogue
+- 🔄 **Self-Annealing Directives** — The system learns from errors and refines its interview technique over time
+- 🏗️ **3-Layer Architecture** — Clean separation of strategy (Directives), flow (Orchestration), and I/O (Execution)
+- 🔒 **Privacy-First** — No data persistence by default; optional local save with authentication
+- 🎭 **Deity-Themed Voices** — Ancient character voices that set a unique interview tone
+- 🔬 **Granular Phenomenology** — Probes pre-reflective experience structure at fine resolution
 
 ## Architecture
 
