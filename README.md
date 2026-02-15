@@ -6,7 +6,7 @@
 
 *Real-time AI voice interviews that probe the fine structure of subjective psychedelic experience*
 
-<img src="Images/a1.jpg" width="600" alt="Anubis — voice interview interface with deity-themed character selection" />
+<img src="Images/anubis-screenshot.jpg" width="600" alt="Anubis — real-time neurophenomenological voice interview interface" />
 
 [![Live on Google Cloud](https://img.shields.io/badge/Live-Google%20Cloud-4285F4?style=flat-square&logo=google-cloud)](https://cloud.google.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
@@ -51,12 +51,8 @@ Under the hood, a **self-annealing directive system** learns from its own errors
 ## Screenshots
 
 <p align="center">
-  <img src="Images/a2.jpg" width="280" alt="Anubis character selection screen" />
-  <img src="Images/a3.jpg" width="280" alt="Anubis live interview session" />
-  <img src="Images/a4.jpg" width="280" alt="Anubis interview transcript view" />
-</p>
-<p align="center">
-  <img src="Images/a5.jpg" width="280" alt="Anubis session summary" />
+  <img src="Images/anubis-screenshot.jpg" width="500" alt="Anubis desktop — voice interview ready state" />
+  <img src="Images/anubis-mobile.jpg" width="200" alt="Anubis mobile — interview interface" />
 </p>
 
 <!-- Add a demo GIF when available:
