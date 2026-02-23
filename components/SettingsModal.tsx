@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings2, Mic, ChevronDown, History, UserPlus } from 'lucide-react';
+import { X, Settings2, Mic, ChevronDown, History, UserPlus, Shield } from 'lucide-react';
 import { AudioSettings, User } from '../types';
 import { VOICES } from '../constants';
 
@@ -111,6 +111,29 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <Mic className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-colors duration-300 peer-focus:text-indigo-400 pointer-events-none" />
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-indigo-400 pointer-events-none" />
             </div>
+          </div>
+
+          <div>
+             <label className="block text-sm font-medium text-slate-400 mb-2">
+              Ethical Contract
+            </label>
+            <button
+              onClick={() => onSettingsChange({ ...settings, increasedSensitivityMode: !settings.increasedSensitivityMode })}
+              className="w-full flex items-center justify-between p-3 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium text-sm">Increased Sensitivity Mode</div>
+                  <div className="text-slate-500 text-xs">Slower pacing and gentler probing</div>
+                </div>
+              </div>
+              <span className={`text-xs font-bold px-2 py-1 rounded ${settings.increasedSensitivityMode ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                {settings.increasedSensitivityMode ? 'ON' : 'OFF'}
+              </span>
+            </button>
           </div>
           
           <div className="text-xs text-slate-500 italic mt-2">
