@@ -35,6 +35,7 @@ export const App: React.FC = () => {
   
   const [audioSettings, setAudioSettings] = useState<AudioSettings>({
     voiceName: 'Anubis',
+    increasedSensitivityMode: false,
   });
   
   const [hasDismissedLoginPrompt, setHasDismissedLoginPrompt] = useState(false);
