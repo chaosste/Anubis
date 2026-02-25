@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { X, Calendar, Play, Download, Trash2, FileText, FileAudio, Braces } from 'lucide-react';
+import { X, Calendar, Trash2, FileText, FileAudio, Braces } from 'lucide-react';
 import { StoredSession } from '../types';
 import { userService, fileService } from '../services/userService';
 

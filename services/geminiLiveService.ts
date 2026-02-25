@@ -252,7 +252,7 @@ export const useGeminiLive = () => {
              setError("Connection error occurred.");
           }
         },
-        onclose: (e: CloseEvent) => {
+        onclose: (_e: CloseEvent) => {
           if (!isIntentionalDisconnectRef.current) handleAutoReconnect();
           else setConnectionState(ConnectionState.DISCONNECTED);
         },
