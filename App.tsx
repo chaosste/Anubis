@@ -13,6 +13,9 @@ import { AnkhIcon } from './components/Icons';
 import { ConnectionState, AudioSettings, User } from './types';
 import { LogIn, LogOut, MoreVertical } from 'lucide-react';
 
+const ANUBISAI_SETTINGS_KEY = 'anubisai_voice_settings';
+const LEGACY_ANUBIS_SETTINGS_KEY = 'anubis_voice_settings';
+
 export const App: React.FC = () => {
   const { 
     connect, 
@@ -33,13 +36,35 @@ export const App: React.FC = () => {
   // effectively persisting the login state across refreshes.
   const [currentUser, setCurrentUser] = useState<User | null>(() => userService.getCurrentUser());
   
-  const [audioSettings, setAudioSettings] = useState<AudioSettings>({
-    voiceName: 'Anubis',
-    increasedSensitivityMode: false,
+  const [audioSettings, setAudioSettings] = useState<AudioSettings>(() => {
+    const saved =
+      localStorage.getItem(ANUBISAI_SETTINGS_KEY) ||
+      localStorage.getItem(LEGACY_ANUBIS_SETTINGS_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          voiceName: parsed.voiceName || 'Anubis',
+          apiKey: parsed.apiKey || '',
+          increasedSensitivityMode: parsed.increasedSensitivityMode || false
+        };
+      } catch (_error) {
+        // Fall through to default.
+      }
+    }
+    return {
+      voiceName: 'Anubis',
+      apiKey: '',
+      increasedSensitivityMode: false
+    };
   });
   
   const [hasDismissedLoginPrompt, setHasDismissedLoginPrompt] = useState(false);
   const [showSaveOptions, setShowSaveOptions] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(ANUBISAI_SETTINGS_KEY, JSON.stringify(audioSettings));
+  }, [audioSettings]);
 
   const handleLoginSuccess = (user: User) => {
     setCurrentUser(user);

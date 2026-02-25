@@ -114,6 +114,27 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Gemini API Key
+            </label>
+            <input
+              type="password"
+              value={settings.apiKey}
+              onChange={(e) => onSettingsChange({ ...settings, apiKey: e.target.value })}
+              placeholder="Paste your Gemini API key"
+              className="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 text-sm"
+            />
+            <a
+              href="https://aistudio.google.com/apikey"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-2 text-xs text-indigo-400 hover:text-indigo-300"
+            >
+              Generate key in Google AI Studio
+            </a>
+          </div>
+
+          <div>
              <label className="block text-sm font-medium text-slate-400 mb-2">
               Ethical Contract
             </label>

@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "vite preview",
-    "preview": "vite preview"
+    "start": "node server.js",
+    "preview": "vite preview",
+    "start:gemini-preview": "vite preview"
   },
   "dependencies": {
     "@google/genai": "^1.32.0",

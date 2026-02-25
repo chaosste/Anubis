@@ -1,7 +1,9 @@
 import { User, StoredSession, CanonicalProtocolPackage } from '../types';
 
-const STORAGE_KEY_USERS = 'anubis_users';
-const STORAGE_KEY_CURRENT_USER = 'anubis_current_user';
+const STORAGE_KEY_USERS = 'anubisai_users';
+const LEGACY_STORAGE_KEY_USERS = 'anubis_users';
+const STORAGE_KEY_CURRENT_USER = 'anubisai_current_user';
+const LEGACY_STORAGE_KEY_CURRENT_USER = 'anubis_current_user';
 const DB_NAME = 'AnubisDB';
 const DB_VERSION = 1;
 const STORE_SESSIONS = 'sessions';
@@ -36,7 +38,7 @@ export const userService = {
   async register(username: string, password: string): Promise<User | null> {
     if (!username || !password) throw new Error('Username and password are required');
     
-    const usersStr = localStorage.getItem(STORAGE_KEY_USERS);
+    const usersStr = localStorage.getItem(STORAGE_KEY_USERS) || localStorage.getItem(LEGACY_STORAGE_KEY_USERS);
     const users: User[] = usersStr ? JSON.parse(usersStr) : [];
     
     if (users.find(u => u.username === username)) {
@@ -54,7 +56,7 @@ export const userService = {
   },
 
   async login(username: string, password: string): Promise<User> {
-    const usersStr = localStorage.getItem(STORAGE_KEY_USERS);
+    const usersStr = localStorage.getItem(STORAGE_KEY_USERS) || localStorage.getItem(LEGACY_STORAGE_KEY_USERS);
     const users: User[] = usersStr ? JSON.parse(usersStr) : [];
     
     const user = users.find(u => u.username === username);
@@ -72,14 +74,14 @@ export const userService = {
   },
 
   getCurrentUser(): User | null {
-    const userStr = localStorage.getItem(STORAGE_KEY_CURRENT_USER);
+    const userStr = localStorage.getItem(STORAGE_KEY_CURRENT_USER) || localStorage.getItem(LEGACY_STORAGE_KEY_CURRENT_USER);
     if (!userStr) return null;
     
     try {
       const currentUser = JSON.parse(userStr);
       
       // Integrity check: Ensure user still exists in DB
-      const usersStr = localStorage.getItem(STORAGE_KEY_USERS);
+      const usersStr = localStorage.getItem(STORAGE_KEY_USERS) || localStorage.getItem(LEGACY_STORAGE_KEY_USERS);
       const users: User[] = usersStr ? JSON.parse(usersStr) : [];
       
       const isValid = users.some(u => u.username === currentUser.username && u.passwordHash === currentUser.passwordHash);

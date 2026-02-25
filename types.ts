@@ -14,6 +14,7 @@ export interface TranscriptionItem {
 
 export interface AudioSettings {
   voiceName: string;
+  apiKey: string;
   increasedSensitivityMode: boolean;
 }
 
@@ -36,6 +37,11 @@ export interface StoredSession {
   transcripts: TranscriptionItem[];
   audioBlob?: Blob; // Not stored in localStorage, but handled in memory for download
 }
+export interface CanonicalProtocolTranscriptItem {
+  speaker: 'Interviewer' | 'Interviewee' | 'AI';
+  text: string;
+  timestamp: string;
+}
 
 export interface CanonicalProtocolPackage {
   protocolVersion: string;
@@ -53,7 +59,7 @@ export interface CanonicalProtocolPackage {
     codebookSuggestions: { label: string; rationale: string; exemplarQuote: string }[];
     diachronicStructure: { phaseName: string; description: string; startTime: string }[];
     synchronicStructure: { category: string; details: string }[];
-    transcript: { speaker: 'Interviewer' | 'Interviewee' | 'AI'; text: string; timestamp: string }[];
+    transcript: CanonicalProtocolTranscriptItem[];
   };
   coding: {
     codes: { id: string; name: string; color: string }[];

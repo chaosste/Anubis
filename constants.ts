@@ -6,16 +6,16 @@ export const AUDIO_SAMPLE_RATE = 16000;
 export const VOICES: Record<string, VoiceProfile> = {
   'Anubis': {
     id: 'Anubis',
-    name: 'Anubis',
+    name: 'Anubis (Egyptian-accented English)',
     apiVoice: 'Fenrir',
-    systemDescription: 'husky, mysterious whisper with a distinct Nile Delta accent speaking British English. The tone should be extremely deep, shadowy, and breathy, like an ancient guide speaking from the underworld. Maintain a slow, rhythmic, and hypnotic pace',
+    systemDescription: 'fluent English with a pronounced Nile Delta-accented cadence. Keep diction clear and understandable. Tone: deep, shadowy, breathy, and calm, like an ancient guide from the underworld. Maintain a slow, rhythmic, hypnotic pace',
     pitchShift: -1
   },
   'Ishtar': {
     id: 'Ishtar',
-    name: 'Ishtar',
+    name: 'Ishtar (Levantine-accented English)',
     apiVoice: 'Kore',
-    systemDescription: 'dusky, sultry voice with a rich, heavy Middle Eastern accent (Arabic inflection) speaking British English. The tone is that of an ancient temple courtesan: intimate, warm, luxurious, and hypnotic, like velvet. Invite the user into a space of sacred confidence with an exotic, captivating allure',
+    systemDescription: 'fluent English with a rich Middle Eastern-accented cadence (Arabic inflection). Keep pronunciation intelligible and warm. Tone: intimate, luxurious, and hypnotic, with confident but gentle pacing',
     pitchShift: 0
   }
 };

@@ -67,7 +67,7 @@ Under the hood, a **self-annealing directive system** learns from its own errors
 |-------|-----------|
 | Frontend | React 19 + TypeScript, Vite |
 | AI | Google Gemini Live API |
-| Deployment | Google Cloud (Docker) |
+| Deployment | Gemini Conversational lane (Vite) + Azure App Service lane (Node server + static dist) |
 | Auth | Built-in authentication system |
 
 ## Installation
@@ -79,7 +79,13 @@ npm install
 npm run dev
 ```
 
-You'll need a Gemini API key — see `.env.example` or environment configuration.
+Open **Settings** in the app and paste your Gemini API key. The key is stored locally in your browser profile.
+
+## Deployment Lanes
+
+- `Gemini Conversational (OG)`: unchanged voice-first Gemini Live interview flow.
+- `Azure App Service`: uses `server.js` for static hosting and `/api/health` operational checks.
+- GitHub Actions Azure workflow: `.github/workflows/azure_webapp_workflow.yml`.
 
 ## ⚠️ Disclaimer
 
