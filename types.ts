@@ -37,7 +37,6 @@ export interface StoredSession {
   transcripts: TranscriptionItem[];
   audioBlob?: Blob; // Not stored in localStorage, but handled in memory for download
 }
-
 export interface CanonicalProtocolTranscriptItem {
   speaker: 'Interviewer' | 'Interviewee' | 'AI';
   text: string;
@@ -57,13 +56,13 @@ export interface CanonicalProtocolPackage {
     takeaways: string[];
     modalities: string[];
     phasesCount: number;
-    codebookSuggestions: string[];
-    diachronicStructure: unknown[];
-    synchronicStructure: unknown[];
+    codebookSuggestions: { label: string; rationale: string; exemplarQuote: string }[];
+    diachronicStructure: { phaseName: string; description: string; startTime: string }[];
+    synchronicStructure: { category: string; details: string }[];
     transcript: CanonicalProtocolTranscriptItem[];
   };
   coding: {
-    codes: unknown[];
-    annotations: unknown[];
+    codes: { id: string; name: string; color: string }[];
+    annotations: { id: string; codeId: string; segmentIndex: number; startOffset: number; endOffset: number; text: string }[];
   };
 }
