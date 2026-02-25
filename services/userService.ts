@@ -1,4 +1,4 @@
-import { User, StoredSession } from '../types';
+import { User, StoredSession, CanonicalProtocolPackage } from '../types';
 
 const STORAGE_KEY_USERS = 'anubisai_users';
 const LEGACY_STORAGE_KEY_USERS = 'anubis_users';
@@ -164,6 +164,46 @@ export const fileService = {
     const filename = `Anubis_Session_${username}_${date}.${ext}`;
     
     await this.saveFile(audioBlob, filename, audioBlob.type, [ext]);
+  },
+
+  async saveCanonicalProtocolPackage(session: StoredSession) {
+    const mapRole = (role: string): 'Interviewer' | 'Interviewee' | 'AI' => {
+      if (role === 'user') return 'Interviewee';
+      return 'AI';
+    };
+
+    const canonical: CanonicalProtocolPackage = {
+      protocolVersion: 'neurophenom-v1.4',
+      exportedAt: new Date().toISOString(),
+      sourceApp: 'Anubis',
+      session: {
+        id: session.id,
+        timestamp: session.timestamp
+      },
+      analysis: {
+        summary: 'Generated from Anubis transcript export. Run canonical analyzer for full structure.',
+        takeaways: [],
+        modalities: [],
+        phasesCount: 0,
+        codebookSuggestions: [],
+        diachronicStructure: [],
+        synchronicStructure: [],
+        transcript: session.transcripts.map((t) => ({
+          speaker: mapRole(t.role),
+          text: t.text,
+          timestamp: '00:00'
+        }))
+      },
+      coding: {
+        codes: [],
+        annotations: []
+      }
+    };
+
+    const content = JSON.stringify(canonical, null, 2);
+    const date = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `Anubis_Canonical_Protocol_${date}.json`;
+    await this.saveFile(content, filename, 'application/json', ['json']);
   },
 
   async saveFile(content: string | Blob, filename: string, mimeType: string, extensions: string[]) {

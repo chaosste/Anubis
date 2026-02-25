@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { X, Calendar, Play, Download, Trash2, FileText, FileAudio } from 'lucide-react';
+import { X, Calendar, Play, Download, Trash2, FileText, FileAudio, Braces } from 'lucide-react';
 import { StoredSession } from '../types';
 import { userService, fileService } from '../services/userService';
 
@@ -140,6 +140,13 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, username }
                                     <FileAudio className="w-5 h-5" />
                                 </button>
                             )}
+                            <button
+                                onClick={() => fileService.saveCanonicalProtocolPackage(selectedSession)}
+                                className="p-2 text-emerald-400 hover:bg-emerald-900/30 rounded-lg transition-colors"
+                                title="Export canonical protocol package"
+                            >
+                                <Braces className="w-5 h-5" />
+                            </button>
                         </div>
                     </div>
 
