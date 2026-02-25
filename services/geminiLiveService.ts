@@ -211,7 +211,10 @@ export const useGeminiLive = () => {
       const ai = new GoogleGenAI({ apiKey });
       
       // Inject welcome message instruction into system instruction to ensure it starts correctly
-      const baseInstruction = getSystemInstruction(voiceProfile.id);
+      const baseInstruction = getSystemInstruction(
+        voiceProfile.id,
+        Boolean(settings.increasedSensitivityMode)
+      );
       const welcomeMsg = getWelcomeMessage(voiceProfile.name);
       const fullInstruction = `${baseInstruction}\n\nIMPORTANT: Start the conversation immediately by saying exactly the following to the user: "${welcomeMsg}"`;
 

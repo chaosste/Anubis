@@ -45,7 +45,8 @@ export const App: React.FC = () => {
         const parsed = JSON.parse(saved);
         return {
           voiceName: parsed.voiceName || 'Anubis',
-          apiKey: parsed.apiKey || ''
+          apiKey: parsed.apiKey || '',
+          increasedSensitivityMode: parsed.increasedSensitivityMode || false
         };
       } catch (_error) {
         // Fall through to default.
@@ -53,7 +54,8 @@ export const App: React.FC = () => {
     }
     return {
       voiceName: 'Anubis',
-      apiKey: ''
+      apiKey: '',
+      increasedSensitivityMode: false
     };
   });
   
