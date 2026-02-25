@@ -165,6 +165,11 @@ export const useGeminiLive = () => {
     setTranscripts([]); 
 
     try {
+      const apiKey = settings.apiKey?.trim();
+      if (!apiKey) {
+        throw new Error('Gemini API key is required. Open Settings and add your key.');
+      }
+
       inputContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: AUDIO_SAMPLE_RATE });
       outputContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
       
@@ -203,7 +208,7 @@ export const useGeminiLive = () => {
 
       recorder.start();
 
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       
       // Inject welcome message instruction into system instruction to ensure it starts correctly
       const baseInstruction = getSystemInstruction(voiceProfile.id);
@@ -254,11 +259,14 @@ export const useGeminiLive = () => {
 
     } catch (err: any) {
       console.error("Failed to connect:", err);
-      if (!isIntentionalDisconnectRef.current) handleAutoReconnect();
-      else {
-         setError(err.message || "Failed to access microphone or connect to API.");
-         setConnectionState(ConnectionState.ERROR);
-         cleanup();
+      const message = err?.message || "Failed to access microphone or connect to API.";
+      const missingKey = typeof message === 'string' && message.includes('Gemini API key is required');
+      if (!isIntentionalDisconnectRef.current && !missingKey) {
+        handleAutoReconnect();
+      } else {
+        setError(message);
+        setConnectionState(ConnectionState.ERROR);
+        cleanup();
       }
     }
   }, [cleanup]);

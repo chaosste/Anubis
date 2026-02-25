@@ -14,6 +14,7 @@ export interface TranscriptionItem {
 
 export interface AudioSettings {
   voiceName: string;
+  apiKey: string;
 }
 
 export interface VoiceProfile {
